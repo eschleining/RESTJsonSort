@@ -50,7 +50,9 @@ public class SortServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String words = request.getParameter("words");
-		String[] wordArray = words.split(" ");
+		//remove leading and trailing whitespaces to avoid empty entries in the html code
+		words=words.trim();
+		String[] wordArray = words.split("\\s+");
 		Arrays.sort(wordArray);
 		request.setAttribute("sortedWords", wordArray);
 		request.getRequestDispatcher("SortedEntries.jsp").forward(request, response);

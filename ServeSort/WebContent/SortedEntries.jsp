@@ -8,6 +8,7 @@
 <title>Sortet Entries</title>
 </head>
 <body>
+<h3>Here are the words in lexicographical order!</h3>
 	<table>
 		<!-- create a table entry with a row for each word in the sorted array 
 		(the Servlet set the sorted array as an attribute called "sortedWords") -->

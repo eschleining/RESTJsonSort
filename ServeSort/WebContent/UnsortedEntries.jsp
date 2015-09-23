@@ -7,9 +7,10 @@
 <title>Enter words!</title>
 </head>
 <body>
+<h3>Please enter the words you wish to get sorted by the server!</h3>
 	<form name="input" method="post">
 		Words to be sorted (seperated by space):<br>
-		<textarea name="words"></textarea>
+		<textarea name="words" ></textarea>
 		<br> <input type="submit" value="Submit"><br>
 	</form>
 </body>
