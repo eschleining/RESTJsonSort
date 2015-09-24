@@ -1,7 +1,7 @@
 package server;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -11,41 +11,39 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.codehaus.jettison.json.*;
 
-import model.Words;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
 
 @Path("/")
 public class JSONPOSTServer {
+
 	/**
+	 * Helper method that converts a JSONArray Object to a List of Strings.
+	 * 
+	 * @param jsonArray
+	 *            the JSONArray Object to be read.
+	 * 
+	 * @returns a List<String> that contains the same elements as the jsonArray
+	 *          Object.
+	 * 
 	 * @throws JSONException
+	 *             if the getString(int) method cannot be invoked on the
+	 *             jsonArray Object.
 	 * 
 	 */
-	public static String[] getJavaStringArray(JSONArray jsonArray) throws JSONException {
-		ArrayList<String> list = new ArrayList<>();
+	public static List<String> getStringList(JSONArray jsonArray) throws JSONException {
+		ArrayList<String> list = new ArrayList<>(jsonArray.length());
 		for (int i = 0; i < jsonArray.length(); i++) {
 			list.add(jsonArray.getString(i));
 		}
-		return list.toArray(new String[list.size()]);
+		return list;
 	}
 
 	/**
-	 * @throws JSONException
+	 * Indicates if the service runs properly and returns a success message.
 	 * 
-	 */
-	public static JSONArray getJsonStringArray(String[] javaArray) throws JSONException {
-		JSONArray jsonArray = new JSONArray();
-		for (int i = 0; i < javaArray.length; i++) {
-			jsonArray.put(javaArray[i]);
-		}
-		return jsonArray;
-	}
-
-	/**
-	 * This method just indicates if the service runs properly and returns a
-	 * success message.
-	 * 
-	 * @return Response message with status 200
+	 * @return response message with status 200
 	 */
 	@GET
 	@Path("/verify")
@@ -59,21 +57,33 @@ public class JSONPOSTServer {
 
 	/**
 	 * 
-	 * @param track
-	 * @return
+	 * Main service method, receives a jsonArray, sorts it and sends the sorted
+	 * input back to the client.
+	 * 
+	 * @param jsonArray
+	 *            the JSONArray sent by the client
+	 * 
+	 * @return Response with status 200 (ok) and the sorted array in JSON format
+	 *         or Response with status 400 (invalid data) and no payload if the
+	 *         client data cannot be processed.
 	 */
 	@POST
 	@Path("/post")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response sortJSONStringArray(JSONArray jsonArray) {
-		String[] javaArray;
 		try {
-			javaArray = getJavaStringArray(jsonArray);
-			Arrays.sort(javaArray);
-			return Response.ok().entity(getJsonStringArray(javaArray)).build();
+
+			List<String> stringList = getStringList(jsonArray);
+			Collections.sort(stringList);
+
+			JSONArray responsePayload = new JSONArray(stringList);
+
+			return Response.ok().entity(responsePayload).build();
 		} catch (JSONException e) {
-			return Response.notAcceptable(null).build();
+			// Send a response with status 400 (invalid data) in case the
+			// jsonArray cannot be processed properly.
+			return Response.status(400).build();
 		}
 
 	}
