@@ -8,34 +8,70 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import helper.Helper;
+
 /**
  * A very basic REST client that sends the list to the RESTSortServer specified
  * by the file "config.json", checks that the server has sorted the list and
- * outputs the result to standart out.
+ * outputs the result to standard out.
  * 
- * @author edi
+ * @author Eduard Schleining
  *
  */
 public class JSONPOSTClient {
-	public static void main(String[] args) {
+	URL url;
+	JSONArray wordArray;
 
+	public URL getUrl() {
+		return url;
+	}
+
+	public void setUrl(URL url) {
+		this.url = url;
+	}
+
+	public JSONArray getWordArray() {
+		return wordArray;
+	}
+
+	public void setWordArray(JSONArray wordArray) {
+		this.wordArray = wordArray;
+	}
+
+	public JSONPOSTClient(URL url, JSONArray wordArray) {
+		super();
+		this.url = url;
+		this.wordArray = wordArray;
+	}
+
+	/**
+	 * Creates a client object with the word array and Server url specified in
+	 * the file.
+	 * 
+	 * @param filename
+	 *            the filename of the config file. The file must be in json
+	 *            format and contain a String attribute "Server" which specifies
+	 *            the URL and a and Array attribute "List" that specifies the
+	 *            wordlist, this client will send to the Server in order to get
+	 *            it sorted.
+	 * 
+	 * @return A JSONPOSTClient Object where the doPost() method can be invoked
+	 *         to receive the sorted list, null if an exception occured.
+	 */
+	private static JSONPOSTClient createClientFromConfigFile(String filename) {
 		// The url of the RESTSortServer specified in the config file
 		URL url = null;
 
 		// The wordlist specified in the config file
 		JSONArray wordArray = null;
 
-		// Parse the config file "config.json" that contains a json object with
-		// the attributes "Server" and "List".
-		// Server points to the URL of the RESTSortServer (usually
-		// http://localhost:8080/RestSortServer/post)
-		// List is a jsonArray that contains the worldlist you wish to get into
-		// lexicographical order.
+		// Parse the config file
 		try (BufferedReader reader = new BufferedReader(new FileReader("config.json"))) {
 
 			// Construct a string with the contents of the config file
@@ -51,22 +87,45 @@ public class JSONPOSTClient {
 			// Read the attributes "Server" and "List" from the JSONObject
 			url = new URL(jsonConfig.getString("Server"));
 			wordArray = jsonConfig.getJSONArray("List");
+
+			// create the resulting JSONPostClient object and return it.
+			JSONPOSTClient client = new JSONPOSTClient(url, wordArray);
+			return client;
 		} catch (FileNotFoundException e) {
-			System.err.println(
-					"The file \"config.json\" doesn not exist in working directory. Please make sure to create a propper config file and re run.");
+			System.err.println("The file \"" + filename
+					+ "\" does not exist in working directory. Please make sure to create a propper config file and re run.");
+			return null;
 		} catch (IOException e) {
-			System.err.println(
-					"Something went wrong while reading the file \"config.json\". Please make sure it exists and can be read by the java virtual machine and re run.");
+			System.err.println("Something went wrong while reading the file \"" + filename
+					+ "\". Please make sure it exists and can be read by the java virtual machine and re run.");
+			return null;
 		} catch (JSONException e) {
-			System.err.println(
-					"The config file \"config.json\" could not be parsed properly. Please make sure the file contains a json Object with the attributes \"Server\" pointing to the URL of the RESTSortServer and \"List\" containin a jsonArray of Strings you wish to get sorted.");
+			System.err.println("The config file \"" + filename
+					+ "\" could not be parsed properly. Please make sure the file contains a json Object with the attributes \"Server\" pointing to the URL of the RESTSortServer and \"List\" containin a jsonArray of Strings you wish to get sorted.");
+			return null;
+		}
+	}
+
+	/**
+	 * Posts the wordArray object to the server sepcified by the url, receives
+	 * the response list, checks that it it in order (sorted) and prints some
+	 * outputs.
+	 * 
+	 * Should url or wordArray be null, this method will print an error message
+	 * and return.
+	 */
+	public void doPost() {
+		if (url == null) {
+			System.err.println("No url specified. Exiting.");
+			return;
 		}
 
-		// if something went wrong, abort
-		if (url == null || wordArray == null)
+		if (wordArray == null) {
+			System.err.println("No word array speified. Exiting.");
 			return;
+		}
 
-		// else send the wordlist to the speciefied URL and check that the
+		// else send the wordlist to the specified URL and check that the
 		// response list is sorted
 		try {
 
@@ -108,13 +167,18 @@ public class JSONPOSTClient {
 				}
 			}
 
+			// Check if the received list is a permutation of the sent list
+			List<String> responseList = Helper.getStringList(responseArray);
+			List<String> requestList = Helper.getStringList(wordArray);
+			boolean permutation = (responseList.containsAll(requestList) && requestList.containsAll(responseList));
+
 			// output the result
 			System.out.println("The request list: " + wordArray.toString() + ".");
 			System.out.println("The response list: " + responseArray.toString() + ".");
-			if (ordered)
+			if (ordered && permutation)
 				System.out.println("The list was sorted properly.");
 			else
-				System.err.println("The list has not been sorted properly.");
+				System.err.println("The list has not been sorted properly or is not a permutation of the sent list.");
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -124,5 +188,17 @@ public class JSONPOSTClient {
 			System.err.println("The response was not parsable into a JSONArray.");
 		}
 
+	}
+
+	/**
+	 * creates a JSONPOSTClient object as specified in the "config.json" file
+	 * and invokes it's doPost() method.
+	 * 
+	 * @param args
+	 *            ignored
+	 */
+	public static void main(String[] args) {
+		JSONPOSTClient client = createClientFromConfigFile("config.json");
+		client.doPost();
 	}
 }

@@ -1,6 +1,5 @@
 package server;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,30 +14,10 @@ import javax.ws.rs.core.Response;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 
+import helper.Helper;
+
 @Path("/")
 public class JSONPOSTServer {
-
-	/**
-	 * Helper method that converts a JSONArray Object to a List of Strings.
-	 * 
-	 * @param jsonArray
-	 *            the JSONArray Object to be read.
-	 * 
-	 * @returns a List<String> that contains the same elements as the jsonArray
-	 *          Object.
-	 * 
-	 * @throws JSONException
-	 *             if the getString(int) method cannot be invoked on the
-	 *             jsonArray Object.
-	 * 
-	 */
-	public static List<String> getStringList(JSONArray jsonArray) throws JSONException {
-		ArrayList<String> list = new ArrayList<>(jsonArray.length());
-		for (int i = 0; i < jsonArray.length(); i++) {
-			list.add(jsonArray.getString(i));
-		}
-		return list;
-	}
 
 	/**
 	 * Indicates if the service runs properly and returns a success message.
@@ -74,7 +53,7 @@ public class JSONPOSTServer {
 	public Response sortJSONStringArray(JSONArray jsonArray) {
 		try {
 
-			List<String> stringList = getStringList(jsonArray);
+			List<String> stringList = Helper.getStringList(jsonArray);
 			Collections.sort(stringList);
 
 			JSONArray responsePayload = new JSONArray(stringList);

@@ -38,5 +38,10 @@
 			<artifactId>jersey-json</artifactId>
 			<version>1.8</version>
 		</dependency>
+		<dependency>
+			<groupId>Helper</groupId>
+			<artifactId>Helper</artifactId>
+			<version>1.0</version>
+		</dependency>
 	</dependencies>
 </project>
