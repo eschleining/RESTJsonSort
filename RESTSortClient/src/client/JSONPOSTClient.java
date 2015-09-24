@@ -53,7 +53,7 @@ public class JSONPOSTClient {
 			wordArray = jsonConfig.getJSONArray("List");
 		} catch (FileNotFoundException e) {
 			System.err.println(
-					"The file \"config.json\" doesn not exist in the same directory as this jar. Please make sure to create a propper config file and re run.");
+					"The file \"config.json\" doesn not exist in working directory. Please make sure to create a propper config file and re run.");
 		} catch (IOException e) {
 			System.err.println(
 					"Something went wrong while reading the file \"config.json\". Please make sure it exists and can be read by the java virtual machine and re run.");
