@@ -16,6 +16,15 @@ import org.codehaus.jettison.json.JSONException;
 
 import helper.Helper;
 
+/**
+ * The Server object which contains a method to check if everything is
+ * installed properly (verifyRESTService()) and the method which receives a
+ * JSONArray, sorts it and sends it back to the client.
+ * 
+ * @author Eduard Schleining
+ *
+ */
+
 @Path("/")
 public class JSONPOSTServer {
 
