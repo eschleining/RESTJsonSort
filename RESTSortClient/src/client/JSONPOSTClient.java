@@ -179,8 +179,10 @@ public class JSONPOSTClient {
 	 * 
 	 * @param jsonArray
 	 *            the array to check the ordering of.
+	 * 
 	 * @return true if all elements in the jsonArray are in lexicographical
 	 *         order or it is empty, false otherwise.
+	 * 
 	 * @throws JSONException
 	 */
 	private static boolean isSortedJSONArray(JSONArray jsonArray) throws JSONException {
