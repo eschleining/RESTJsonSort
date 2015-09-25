@@ -18,8 +18,8 @@ import helper.Helper;
 
 /**
  * A very basic REST client that sends the list to the RESTSortServer specified
- * by the file "config.json", checks that the server has sorted the list and
- * outputs the result to standard out.
+ * by the file "config.json", checks that the response list is sorted and a
+ * permutation of the request list and outputs the result to standard out.
  * 
  * @author Eduard Schleining
  *
@@ -45,7 +45,6 @@ public class JSONPOSTClient {
 	}
 
 	public JSONPOSTClient(URL url, JSONArray wordArray) {
-		super();
 		this.url = url;
 		this.wordArray = wordArray;
 	}
@@ -58,13 +57,13 @@ public class JSONPOSTClient {
 	 *            the filename of the config file. The file must be in json
 	 *            format and contain a String attribute "Server" which specifies
 	 *            the URL and a and Array attribute "List" that specifies the
-	 *            wordlist, this client will send to the Server in order to get
+	 *            wordArray, this client will send to the Server in order to get
 	 *            it sorted.
 	 * 
 	 * @return A JSONPOSTClient Object where the doPost() method can be invoked
-	 *         to receive the sorted list, null if an exception occured.
+	 *         to receive the sorted list, null if an exception occurred.
 	 */
-	private static JSONPOSTClient createClientFromConfigFile(String filename) {
+	public static JSONPOSTClient createClientFromConfigFile(String filename) {
 		// The url of the RESTSortServer specified in the config file
 		URL url = null;
 
@@ -153,29 +152,13 @@ public class JSONPOSTClient {
 			// check that the response is a JSONArray
 			JSONArray responseArray = new JSONArray(stringBuffer.toString());
 
-			// check that the array is in ascending lexicographical order
-			boolean ordered = true;
-			if (responseArray.length() > 0) {
-				String last = responseArray.getString(0);
-				for (int i = 1; i < responseArray.length(); i++) {
-					String current = responseArray.getString(i);
-					if (last.compareTo(current) > 0) {
-						ordered = false;
-						break;
-					}
-					last = current;
-				}
-			}
-
-			// Check if the received list is a permutation of the sent list
-			List<String> responseList = Helper.getStringList(responseArray);
-			List<String> requestList = Helper.getStringList(wordArray);
-			boolean permutation = (responseList.containsAll(requestList) && requestList.containsAll(responseList));
-
 			// output the result
 			System.out.println("The request list: " + wordArray.toString() + ".");
 			System.out.println("The response list: " + responseArray.toString() + ".");
-			if (ordered && permutation)
+
+			// call the check methods to see if the response list is sorted and
+			// a permutation of the sent list (wordArray)
+			if (isSortedJSONArray(responseArray) && isPermutationOfWordList(responseArray))
 				System.out.println("The list was sorted properly.");
 			else
 				System.err.println("The list has not been sorted properly or is not a permutation of the sent list.");
@@ -191,8 +174,77 @@ public class JSONPOSTClient {
 	}
 
 	/**
+	 * Checks whether a JSONArray is sorted or not. Returns true if it is, false
+	 * otherwise.
+	 * 
+	 * @param jsonArray
+	 *            the array to check the ordering of.
+	 * @return true if all elements in the jsonArray are in lexicographical
+	 *         order or it is empty, false otherwise.
+	 * @throws JSONException
+	 */
+	private static boolean isSortedJSONArray(JSONArray jsonArray) throws JSONException {
+		// if the array is empty or has only one element, it is sorted
+		if (jsonArray.length() <= 1)
+			return true;
+
+		// initialize the last pointer to the first position of the array
+		String last = jsonArray.getString(0);
+
+		// loop through the array and compare all elements pairwise.
+		for (int i = 1; i < jsonArray.length(); i++) {
+			String current = jsonArray.getString(i);
+
+			// this elements (current, last) are not in order, return false
+			if (last.compareTo(current) > 0)
+				return false;
+
+			// update the last pointer to the current index before increasing
+			// the index
+			last = current;
+		}
+
+		// no unordered elements found. Return true
+		return true;
+	}
+
+	/**
+	 * Checks if the jsonArray is a permutation of the wordArray field.
+	 * 
+	 * @param jsonArray
+	 *            the array to check against the wordArray field.
+	 * 
+	 * @return true if jsonArray contains the same elements as wordList and vice
+	 *         versa.
+	 * 
+	 * @throws JSONException
+	 *             if the Helper.getStringList(JSONArray) throws the exception
+	 *             with either the wordArray as an argument or jsonArray.
+	 */
+	private boolean isPermutationOfWordList(JSONArray jsonArray) throws JSONException {
+
+		// initialize List objects
+		List<String> wordList = Helper.getStringList(wordArray);
+		List<String> otherList = Helper.getStringList(jsonArray);
+
+		// loop through the wordList (wordArray) and remove all found elements
+		// from otherList (responseArray)
+		for (String word : wordList) {
+
+			// if this word is not found in other array, the other array is no
+			// permutation of wordArray, return false
+			if (!otherList.remove(word))
+				return false;
+		}
+
+		// if otherList still contains elements after all worList elements have
+		// been removed, it is no permutation, else it is.
+		return otherList.isEmpty();
+	}
+
+	/**
 	 * creates a JSONPOSTClient object as specified in the "config.json" file
-	 * and invokes it's doPost() method.
+	 * and invokes its doPost() method.
 	 * 
 	 * @param args
 	 *            ignored
