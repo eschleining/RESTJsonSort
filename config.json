@@ -1,6 +1,6 @@
 {
-	Server	:	"http://localhost:8080/RESTSortServer/post",
+	"Server"	:	"http://localhost:8080/RESTSortServer/post",
 	
-	List	:	["harry", "ron", "hermione"]
+	"List"	:	["harry", "ron", "hermione"]
 	 
 }
