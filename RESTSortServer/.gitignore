@@ -1,3 +1,4 @@
 /build/
 /target/*
 !/target/RESTJSONSort-1.0.war
+/target/
