@@ -16,7 +16,7 @@ How to run:
 
 Copy the RESTSortServer.war file into the "webapps" (usually /var/lib/tomcat7/webapps) folder 
 of your tomcat7 installation:
-sudo cp RESTSortServer.war /var/lib/tomcat7/webapps/
+sudo cp RESTSortServer/target/RESTJSONSort-1.0.war /var/lib/tomcat7/webapps/
 
 To check if everything is installed properly open a browser window with your tomcat address and the suffix "RESTSortServer/verify" 
 (e.g. in my installation the address is: "http://localhost:8080/RESTSortServer/verify"). If you see
@@ -27,4 +27,4 @@ You might have to change the "Server" attribute of the file "config.json" if you
 feel free to change the "List" property of the config.json just make sure to specify a json Array.
 
 To run the client it is enough to execute the RESTSortClient.jar from the same working directory that the "config.json" is in:
-java -jar RESTSortClient.jar
+java -jar RESTSortClient/target/RESTSortClient-1.0-jar-with-dependencies.jar
