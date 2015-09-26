@@ -30,3 +30,9 @@ You might have to change the "Server" attribute of the file "config.json" if you
 To run the client it is enough to execute the RESTSortClient.jar from the same working directory that the "config.json" is in:
 
 java -jar RESTSortClient/target/RESTSortClient-1.0-jar-with-dependencies.jar
+
+If you change the source code you can use maven to recreate the war and jar files, in the root directory execute
+
+mvn package
+
+and maven will build the Helper,Client and Server components.
