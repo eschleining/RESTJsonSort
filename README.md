@@ -37,7 +37,9 @@ You might have to change the "Server" attribute of the file "config.json" if you
 To run the client it is enough to downlad the "config.json" file and the client jar. Then execute the client jar from the same working directory that the "config.json" is in:
 
 wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.0/config.json
+
 wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.0/Client-1.0-jar-with-dependencies.jar
+
 java -jar Client-1.0-jar-with-dependencies.jar
 
 ##How to build:
