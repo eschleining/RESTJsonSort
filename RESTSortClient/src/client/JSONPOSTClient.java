@@ -55,9 +55,9 @@ public class JSONPOSTClient {
 	 * 
 	 * @param filename
 	 *            the filename of the config file. The file must be in json
-	 *            format and contain a String attribute "Server" which specifies
-	 *            the URL and a and Array attribute "List" that specifies the
-	 *            wordArray, this client will send to the Server in order to get
+	 *            format and contain a string attribute "Server" which specifies
+	 *            the URL and an array attribute "List" that specifies the
+	 *            wordArray, this client will send to the server in order to get
 	 *            it sorted.
 	 * 
 	 * @return A JSONPOSTClient Object where the doPost() method can be invoked
@@ -106,8 +106,8 @@ public class JSONPOSTClient {
 	}
 
 	/**
-	 * Posts the wordArray object to the server sepcified by the url, receives
-	 * the response list, checks that it it in order (sorted) and prints some
+	 * Posts the wordArray object to the server specified by the url, receives
+	 * the response list, checks that it is in order (sorted) and prints some
 	 * outputs.
 	 * 
 	 * Should url or wordArray be null, this method will print an error message
@@ -245,7 +245,7 @@ public class JSONPOSTClient {
 	}
 
 	/**
-	 * creates a JSONPOSTClient object as specified in the "config.json" file
+	 * Creates a JSONPOSTClient object as specified in the "config.json" file
 	 * and invokes its doPost() method.
 	 * 
 	 * @param args
