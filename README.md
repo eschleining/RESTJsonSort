@@ -25,7 +25,9 @@ sudo apt-get install maven3
 
 Download and copy the server war file into the "webapps" (usually /var/lib/tomcat7/webapps) folder 
 of your tomcat7 installation:
+
 wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.0/Server-1.0.war
+
 sudo cp Server-1.0.war /var/lib/tomcat7/webapps/
 
 To check if everything is installed properly open a browser window with your tomcat address and the suffix "RESTSortServer/verify" 
