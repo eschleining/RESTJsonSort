@@ -14,6 +14,12 @@ sudo apt-get install oracle-java7-installer
 
 sudo apt-get install tomcat7
 
+###Apache Maven 3:
+
+If you wish to alter the source code, you can use maven (v 3) to recreate the war (server) and jar (client) file.
+
+sudo apt-get install maven3
+
 
 ##How to run:
 
