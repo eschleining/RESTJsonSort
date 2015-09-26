@@ -28,13 +28,3 @@ feel free to change the "List" property of the config.json just make sure to spe
 
 To run the client it is enough to execute the RESTSortClient.jar from the same working directory that the "config.json" is in:
 java -jar RESTSortClient.jar
-
-
-Source code:
-
-The source code for the server application is included in the "RESTSortServer.war" file ("/WEB-INF/classes/server/JSONPOSTServer.java").
-
-The client source code is inside the RESTSortClient-Source.jar archive ("/client/JSONPOSTClient.java)".
-
-The file "RESTSortHelper-Source.jar" contains the source code for the Helper class that is contained in both the client and the server executables (war and jar), 
-it wraps a method to create a java List from a JSONArray.
