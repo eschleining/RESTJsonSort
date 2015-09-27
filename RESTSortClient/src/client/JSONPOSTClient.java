@@ -271,8 +271,8 @@ public class JSONPOSTClient {
 		System.out.println("The request list: " + requestArray.toString() + ".");
 		System.out.println("The response list: " + responseArray.toString() + ".");
 
-		// call the check methods to see if the response list is sorted and
-		// a permutation of the sent list (wordArray)
+		// call the check methods to see if the responseArray is sorted and a
+		// permutation of the requestArray
 		try {
 
 			if (client.responseIsSortedJSONArray() && client.responseIsPermutationOfWordList())
