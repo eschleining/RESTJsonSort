@@ -51,3 +51,7 @@ If you change the source code you can use maven to recreate the war and jar file
 mvn package
 
 and maven will build the Helper,Client and Server components (the executables will be stored inside the "target" directory of the corresponding components).
+
+If you have configured the manager app for tomcat, you can also use maven to deploy the sort server by defining a server with the id "TomcatServer" in your maven settings.xml, that contains the credentials for a user with the "manager-script" role. 
+For more information about the tomcat manager app read this: http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html#Configuring_Manager_Application_Access 
+If you seek instructions to configure maven, read this: http://maven.apache.org/ref/3.3.3/maven-settings/settings.html

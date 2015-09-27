@@ -5,6 +5,7 @@
 	<artifactId>RESTJsonSort</artifactId>
 	<version>1.0</version>
   <packaging>pom</packaging>
+
   <modules>
     <module>RESTSortHelper</module>
     <module>RESTSortServer</module>
