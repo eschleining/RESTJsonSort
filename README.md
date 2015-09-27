@@ -10,7 +10,7 @@ Sample program to demonstrate a RESTJson Server. The client sends a json array o
 
 `sudo apt-get install oracle-java7-installer`
 
-###Tomcat 7 application server:
+###Apache Tomcat 7:
 
 `sudo apt-get install tomcat7`
 
