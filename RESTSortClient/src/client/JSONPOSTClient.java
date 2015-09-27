@@ -184,6 +184,8 @@ public class JSONPOSTClient {
 	 *         order or it is empty, false otherwise.
 	 * 
 	 * @throws JSONException
+	 *             if the getString(int) method cannot be invoked on the
+	 *             jsonArray parameter.
 	 */
 	private static boolean isSortedJSONArray(JSONArray jsonArray) throws JSONException {
 		// if the array is empty or has only one element, it is sorted
