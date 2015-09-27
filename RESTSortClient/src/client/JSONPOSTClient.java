@@ -211,22 +211,22 @@ public class JSONPOSTClient {
 	public boolean responseIsPermutationOfRequest() throws JSONException {
 
 		// initialize List objects
-		List<String> wordList = Helper.getStringList(requestArray);
-		List<String> otherList = Helper.getStringList(responseArray);
+		List<String> requestList = Helper.getStringList(requestArray);
+		List<String> responseList = Helper.getStringList(responseArray);
 
-		// loop through the wordList (wordArray) and remove all found elements
-		// from otherList (responseArray)
-		for (String word : wordList) {
+		// loop through the requestList (requestArray) and remove all found
+		// elements from responseList (responseArray)
+		for (String word : requestList) {
 
-			// if this word is not found in other array, the other array is no
-			// permutation of wordArray, return false
-			if (!otherList.remove(word))
+			// if this word is not found in responseArray, it is no
+			// permutation of requestArray, return false
+			if (!responseList.remove(word))
 				return false;
 		}
 
-		// if otherList still contains elements after all worList elements have
-		// been removed, it is no permutation, else it is.
-		return otherList.isEmpty();
+		// if responseList still contains elements after all requestList
+		// elements have been removed, it is no permutation, else it is.
+		return responseList.isEmpty();
 	}
 
 	/**
