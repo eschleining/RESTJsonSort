@@ -25,8 +25,8 @@ import helper.Helper;
  *
  */
 public class JSONPOSTClient {
-	URL url;
-	JSONArray wordArray;
+	URL url = null;
+	JSONArray requestArray = null, responseArray = null;
 
 	public URL getUrl() {
 		return url;
@@ -37,20 +37,75 @@ public class JSONPOSTClient {
 	}
 
 	public JSONArray getWordArray() {
-		return wordArray;
+		return requestArray;
 	}
 
 	public void setWordArray(JSONArray wordArray) {
-		this.wordArray = wordArray;
+		this.requestArray = wordArray;
+
+		// reset the response array
+		this.responseArray = null;
+	}
+
+	/**
+	 * Posts the wordArray object to the server specified by the url, receives
+	 * the response list and sets the responseArray field before returning it.
+	 * 
+	 * @return if the field responseArray is not null, returns the field
+	 *         responseArray, else calls the doPost() method and returns the
+	 *         value of the responseArray afterwards
+	 * 
+	 * @throws IOException
+	 *             if a connection to the url is not possible, has no output or
+	 *             no input Stream.
+	 * 
+	 * @throws JSONException
+	 *             if the input stream cannot be parsed into a JSONArray object
+	 */
+	public JSONArray getResponseArray() throws IOException, JSONException {
+
+		// if responseArray is already set, return it
+		if (responseArray != null)
+			return responseArray;
+
+		// else send the wordlist to the specified URL and receive the
+		// responseArray
+
+		// connect to the rest-json server
+		URLConnection connection = url.openConnection();
+		connection.setRequestProperty("Content-Type", "application/json");
+		connection.setDoOutput(true);
+		connection.connect();
+
+		// send the List JSONArray
+		OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
+		// System.out.println(wordArray.toString());
+		out.write(requestArray.toString());
+		out.close();
+
+		// receive the response List
+		BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		String line;
+		StringBuilder stringBuffer = new StringBuilder();
+		while ((line = in.readLine()) != null) {
+			stringBuffer.append(line);
+		}
+		in.close();
+
+		// check that the response is a JSONArray and set the responseArray
+		// field
+		responseArray = new JSONArray(stringBuffer.toString());
+
+		return responseArray;
 	}
 
 	public JSONPOSTClient(URL url, JSONArray wordArray) {
 		this.url = url;
-		this.wordArray = wordArray;
+		this.requestArray = wordArray;
 	}
 
 	/**
-	 * Creates a client object with the word array and Server url specified in
+	 * Creates a client object with the requestArray and Server url specified in
 	 * the file.
 	 * 
 	 * @param filename
@@ -62,8 +117,19 @@ public class JSONPOSTClient {
 	 * 
 	 * @return A JSONPOSTClient Object where the doPost() method can be invoked
 	 *         to receive the sorted list, null if an exception occurred.
+	 * 
+	 * @throws FileNotFoundException
+	 *             if the file with filename does not exist
+	 * 
+	 * @throws IOException
+	 *             if a FileInputStream cannot be opened on the file with
+	 *             filename
+	 * 
+	 * @throws JSONException
+	 *             if the file with filename has no doensn't contain json
 	 */
-	public static JSONPOSTClient createClientFromConfigFile(String filename) {
+	public static JSONPOSTClient createClientFromConfigFile(String filename)
+			throws FileNotFoundException, IOException, JSONException {
 		// The url of the RESTSortServer specified in the config file
 		URL url = null;
 
@@ -71,133 +137,50 @@ public class JSONPOSTClient {
 		JSONArray wordArray = null;
 
 		// Parse the config file
-		try (BufferedReader reader = new BufferedReader(new FileReader("config.json"))) {
-
-			// Construct a string with the contents of the config file
-			StringBuilder stringConfigBuffer = new StringBuilder();
-			String line;
-			while ((line = reader.readLine()) != null) {
-				stringConfigBuffer.append(line);
-			}
-
-			// Parse the string into a JSONObject
-			JSONObject jsonConfig = new JSONObject(stringConfigBuffer.toString());
-
-			// Read the attributes "Server" and "List" from the JSONObject
-			url = new URL(jsonConfig.getString("Server"));
-			wordArray = jsonConfig.getJSONArray("List");
-
-			// create the resulting JSONPostClient object and return it.
-			JSONPOSTClient client = new JSONPOSTClient(url, wordArray);
-			return client;
-		} catch (FileNotFoundException e) {
-			System.err.println("The file \"" + filename
-					+ "\" does not exist in working directory. Please make sure to create a propper config file and re run.");
-			return null;
-		} catch (IOException e) {
-			System.err.println("Something went wrong while reading the file \"" + filename
-					+ "\". Please make sure it exists and can be read by the java virtual machine and re run.");
-			return null;
-		} catch (JSONException e) {
-			System.err.println("The config file \"" + filename
-					+ "\" could not be parsed properly. Please make sure the file contains a json Object with the attributes \"Server\" pointing to the URL of the RESTSortServer and \"List\" containin a jsonArray of Strings you wish to get sorted.");
-			return null;
+		BufferedReader reader = new BufferedReader(new FileReader("config.json"));
+		// Construct a string with the contents of the config file
+		StringBuilder stringConfigBuffer = new StringBuilder();
+		String line;
+		while ((line = reader.readLine()) != null) {
+			stringConfigBuffer.append(line);
 		}
+		reader.close();
+
+		// Parse the string into a JSONObject
+		JSONObject jsonConfig = new JSONObject(stringConfigBuffer.toString());
+
+		// Read the attributes "Server" and "List" from the JSONObject
+		url = new URL(jsonConfig.getString("Server"));
+		wordArray = jsonConfig.getJSONArray("List");
+
+		// create the resulting JSONPostClient object and return it.
+		JSONPOSTClient client = new JSONPOSTClient(url, wordArray);
+		return client;
 	}
 
 	/**
-	 * Posts the wordArray object to the server specified by the url, receives
-	 * the response list, checks that it is in order (sorted) and prints some
-	 * outputs.
+	 * Checks whether the reponseArray is sorted or not. Returns true if it is,
+	 * false otherwise.
 	 * 
-	 * Should url or wordArray be null, this method will print an error message
-	 * and return.
-	 */
-	public void doPost() {
-		if (url == null) {
-			System.err.println("No url specified. Exiting.");
-			return;
-		}
-
-		if (wordArray == null) {
-			System.err.println("No word array speified. Exiting.");
-			return;
-		}
-
-		// else send the wordlist to the specified URL and check that the
-		// response list is sorted
-		try {
-
-			// connect to the rest-json server
-			URLConnection connection = url.openConnection();
-			connection.setRequestProperty("Content-Type", "application/json");
-			connection.setDoOutput(true);
-			connection.connect();
-
-			// send the List JSONArray
-			OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
-			// System.out.println(wordArray.toString());
-			out.write(wordArray.toString());
-			out.close();
-
-			// receive the response List
-			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			String line;
-			StringBuilder stringBuffer = new StringBuilder();
-			while ((line = in.readLine()) != null) {
-				stringBuffer.append(line);
-			}
-			in.close();
-
-			// check that the response is a JSONArray
-			JSONArray responseArray = new JSONArray(stringBuffer.toString());
-
-			// output the result
-			System.out.println("The request list: " + wordArray.toString() + ".");
-			System.out.println("The response list: " + responseArray.toString() + ".");
-
-			// call the check methods to see if the response list is sorted and
-			// a permutation of the sent list (wordArray)
-			if (isSortedJSONArray(responseArray) && isPermutationOfWordList(responseArray))
-				System.out.println("The list was sorted properly.");
-			else
-				System.err.println("The list has not been sorted properly or is not a permutation of the sent list.");
-
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.err.println("Could not open connection to \"" + url.toString()
-					+ "\". Please make sure the url is correct and the server is running.");
-		} catch (JSONException e) {
-			System.err.println("The response was not parsable into a JSONArray.");
-		}
-
-	}
-
-	/**
-	 * Checks whether a JSONArray is sorted or not. Returns true if it is, false
-	 * otherwise.
-	 * 
-	 * @param jsonArray
-	 *            the array to check the ordering of.
-	 * 
-	 * @return true if all elements in the jsonArray are in lexicographical
+	 * @return true if all elements in the responseArray are in lexicographical
 	 *         order or it is empty, false otherwise.
 	 * 
 	 * @throws JSONException
 	 *             if the getString(int) method cannot be invoked on the
 	 *             jsonArray parameter.
 	 */
-	private static boolean isSortedJSONArray(JSONArray jsonArray) throws JSONException {
+	public boolean responseIsSortedJSONArray() throws JSONException {
+
 		// if the array is empty or has only one element, it is sorted
-		if (jsonArray.length() <= 1)
+		if (responseArray.length() <= 1)
 			return true;
 
 		// initialize the last pointer to the first position of the array
-		String last = jsonArray.getString(0);
+		String last = responseArray.getString(0);
 
 		// loop through the array and compare all elements pairwise.
-		for (int i = 1; i < jsonArray.length(); i++) {
-			String current = jsonArray.getString(i);
+		for (int i = 1; i < responseArray.length(); i++) {
+			String current = responseArray.getString(i);
 
 			// this elements (current, last) are not in order, return false
 			if (last.compareTo(current) > 0)
@@ -225,11 +208,11 @@ public class JSONPOSTClient {
 	 *             if the Helper.getStringList(JSONArray) throws the exception
 	 *             with either the wordArray as an argument or jsonArray.
 	 */
-	private boolean isPermutationOfWordList(JSONArray jsonArray) throws JSONException {
+	public boolean responseIsPermutationOfWordList() throws JSONException {
 
 		// initialize List objects
-		List<String> wordList = Helper.getStringList(wordArray);
-		List<String> otherList = Helper.getStringList(jsonArray);
+		List<String> wordList = Helper.getStringList(requestArray);
+		List<String> otherList = Helper.getStringList(responseArray);
 
 		// loop through the wordList (wordArray) and remove all found elements
 		// from otherList (responseArray)
@@ -247,14 +230,60 @@ public class JSONPOSTClient {
 	}
 
 	/**
-	 * Creates a JSONPOSTClient object as specified in the "config.json" file
-	 * and invokes its doPost() method.
+	 * Creates a JSONPOSTClient object as specified in the "config.json" file,
+	 * calls its getResponseArray() method and its check methods and outputs the
+	 * results.
 	 * 
 	 * @param args
 	 *            ignored
 	 */
 	public static void main(String[] args) {
-		JSONPOSTClient client = createClientFromConfigFile("config.json");
-		client.doPost();
+
+		// create a client object
+		JSONPOSTClient client = null;
+		try {
+			client = createClientFromConfigFile("config.json");
+		} catch (FileNotFoundException e) {
+			System.err.println("The config file \"config.json\" cannot be found.");
+			return;
+		} catch (IOException e) {
+			System.err.println("The config file \"config.json\" cannot be read.");
+			return;
+		} catch (JSONException e) {
+			System.err.println("The config file \"config.json\" doesn't contain valid JSON code.");
+			return;
+		}
+
+		// get the request and response arrays
+		JSONArray requestArray = client.getWordArray();
+		JSONArray responseArray = null;
+		try {
+			responseArray = client.getResponseArray();
+		} catch (IOException e) {
+			System.err.println("The server didn't behave as expected.");
+			return;
+		} catch (JSONException e) {
+			System.err.println("The server didn't send a JSON array.");
+			return;
+		}
+
+		// output the result
+		System.out.println("The request list: " + requestArray.toString() + ".");
+		System.out.println("The response list: " + responseArray.toString() + ".");
+
+		// call the check methods to see if the response list is sorted and
+		// a permutation of the sent list (wordArray)
+		try {
+
+			if (client.responseIsSortedJSONArray() && client.responseIsPermutationOfWordList())
+				System.out.println("The list was sorted properly.");
+			else
+				System.err.println("The list has not been sorted properly or is not a permutation of the sent list.");
+
+		} catch (JSONException e) {
+			System.err.println("One of the arrays is not an array of Strings.");
+			return;
+		}
+
 	}
 }
