@@ -52,8 +52,9 @@ public class JSONPOSTClient {
 	 * the response list and sets the responseArray field before returning it.
 	 * 
 	 * @return if the field responseArray is not null, returns the field
-	 *         responseArray, else calls the doPost() method and returns the
-	 *         value of the responseArray afterwards
+	 *         responseArray, else does a post request with the requestList,
+	 *         sets the responseArray field to the received result and returns
+	 *         the value of the responseArray afterwards
 	 * 
 	 * @throws IOException
 	 *             if a connection to the url is not possible, has no output or
@@ -206,7 +207,7 @@ public class JSONPOSTClient {
 	 * 
 	 * @throws JSONException
 	 *             if the Helper.getStringList(JSONArray) throws the exception
-	 *             with either the wordArray as an argument or jsonArray.
+	 *             with either the request- or responseArray as an argument.
 	 */
 	public boolean responseIsPermutationOfRequest() throws JSONException {
 
