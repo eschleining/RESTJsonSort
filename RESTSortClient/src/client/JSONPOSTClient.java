@@ -36,11 +36,11 @@ public class JSONPOSTClient {
 		this.url = url;
 	}
 
-	public JSONArray getWordArray() {
+	public JSONArray getRequestArray() {
 		return requestArray;
 	}
 
-	public void setWordArray(JSONArray wordArray) {
+	public void setRequestArray(JSONArray wordArray) {
 		this.requestArray = wordArray;
 
 		// reset the response array
@@ -255,7 +255,7 @@ public class JSONPOSTClient {
 		}
 
 		// get the request and response arrays
-		JSONArray requestArray = client.getWordArray();
+		JSONArray requestArray = client.getRequestArray();
 		JSONArray responseArray = null;
 		try {
 			responseArray = client.getResponseArray();
