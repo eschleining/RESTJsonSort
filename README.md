@@ -44,7 +44,9 @@ You might have to change the "Server" attribute of the file "config.json" if you
 
 ##How to build:
 
-If you change the source code you can use maven to recreate the war and jar files, in the root directory execute `mvn package` and maven will build the Helper,Client and Server components (the executables will be stored inside the "target" directory of the corresponding components).
+First install all required libraries into your local maven repo by executing `mvn install` from the root directory of this git repository.
+
+Then in the root directory execute `mvn package` and maven will build the Helper,Client and Server components (the executables will be stored inside the "target" directory of the corresponding components).
 
 If you have configured the manager app for tomcat, you can also use maven to deploy the sort server by defining a server with the id "TomcatServer" in your maven settings.xml, that contains the credentials for a tomcat user with the "manager-script" role (the user must be defined in tomcats "tomcat-users.xml" file with the role "manager-script").
 
