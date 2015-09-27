@@ -169,7 +169,7 @@ public class JSONPOSTClient {
 	 *             if the getString(int) method cannot be invoked on the
 	 *             jsonArray parameter.
 	 */
-	public boolean responseIsSortedJSONArray() throws JSONException {
+	public boolean responseIsSorted() throws JSONException {
 
 		// if the array is empty or has only one element, it is sorted
 		if (responseArray.length() <= 1)
@@ -208,7 +208,7 @@ public class JSONPOSTClient {
 	 *             if the Helper.getStringList(JSONArray) throws the exception
 	 *             with either the wordArray as an argument or jsonArray.
 	 */
-	public boolean responseIsPermutationOfWordList() throws JSONException {
+	public boolean responseIsPermutationOfRequest() throws JSONException {
 
 		// initialize List objects
 		List<String> wordList = Helper.getStringList(requestArray);
@@ -275,7 +275,7 @@ public class JSONPOSTClient {
 		// permutation of the requestArray
 		try {
 
-			if (client.responseIsSortedJSONArray() && client.responseIsPermutationOfWordList())
+			if (client.responseIsSorted() && client.responseIsPermutationOfRequest())
 				System.out.println("The list was sorted properly.");
 			else
 				System.err.println("The list has not been sorted properly or is not a permutation of the sent list.");
