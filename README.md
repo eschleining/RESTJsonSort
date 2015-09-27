@@ -26,7 +26,7 @@ If you wish to alter the source code, you can use maven (v 3) to recreate the wa
 Download and copy the server war file into the "webapps" (usually /var/lib/tomcat7/webapps) folder 
 of your tomcat7 installation:
 
-`wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.0/RESTSortServer.war`
+`wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.1/RESTSortServer.war`
 
 `sudo cp RESTSortServer.war /var/lib/tomcat7/webapps/`
 
@@ -34,9 +34,9 @@ To check if everything is installed properly open a browser window with your tom
 
 To run the client it is enough to downlad the "config.json" file and the client jar:
 
-`wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.0/config.json`
+`wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.1/config.json`
 
-`wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.0/RESTSortClient.jar`
+`wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.1/RESTSortClient.jar`
 
 You might have to change the "Server" attribute of the file "config.json" if your tomcat listens to another address than "http://localhost:8080/" before running the client jar. If you wish to get another list sorted than the default `["harry", "ron", "hermione"]` feel free to change the `"List"` property of the config.json just make sure to specify a JSON Array. Then execute the client jar from the same working directory that the "config.json" is in:
 
