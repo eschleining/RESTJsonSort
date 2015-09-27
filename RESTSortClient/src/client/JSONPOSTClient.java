@@ -40,8 +40,8 @@ public class JSONPOSTClient {
 		return requestArray;
 	}
 
-	public void setRequestArray(JSONArray wordArray) {
-		this.requestArray = wordArray;
+	public void setRequestArray(JSONArray requestArray) {
+		this.requestArray = requestArray;
 
 		// reset the response array
 		this.responseArray = null;
