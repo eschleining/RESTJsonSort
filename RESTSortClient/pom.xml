@@ -36,8 +36,6 @@
 							<descriptorRefs>
 								<descriptorRef>jar-with-dependencies</descriptorRef>
 							</descriptorRefs>
-							<finalName>${artifactId}-${version}</finalName>
-							<appendAssemblyId>false</appendAssemblyId>
 						</configuration>
 					</execution>
 				</executions>
@@ -60,7 +58,7 @@
 		</dependency>
 		<dependency>
 			<groupId>RESTJsonSort</groupId>
-			<artifactId>Helper</artifactId>
+			<artifactId>RESTSortHelper</artifactId>
 			<version>1.0</version>
 		</dependency>
 	</dependencies>
