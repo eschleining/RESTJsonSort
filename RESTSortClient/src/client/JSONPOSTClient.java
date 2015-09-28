@@ -6,10 +6,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -138,7 +144,7 @@ public class JSONPOSTClient {
 		JSONArray wordArray = null;
 
 		// Parse the config file
-		BufferedReader reader = new BufferedReader(new FileReader("config.json"));
+		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		// Construct a string with the contents of the config file
 		StringBuilder stringConfigBuffer = new StringBuilder();
 		String line;
@@ -231,28 +237,72 @@ public class JSONPOSTClient {
 	}
 
 	/**
-	 * Creates a JSONPOSTClient object as specified in the "config.json" file,
-	 * calls its getResponseArray() method and its check methods and outputs the
-	 * results.
+	 * Creates a JSONPOSTClient object as specified in a config file or by
+	 * command line arguments, calls its getResponseArray() method and its check
+	 * methods and outputs the results.
 	 * 
 	 * @param args
-	 *            ignored
+	 *            command line arguments
 	 */
 	public static void main(String[] args) {
 
-		// create a client object
-		JSONPOSTClient client = null;
+		// create command line options
+		Options options = new Options();
+		options.addOption("s", "server", true, "A URL pointing to the server to send the wordList to.");
+		options.addOption("l", "list", true, "A JSON array of words that will be sent to the RESTSortServer.");
+		options.addOption("c", "config", true,
+				"A file that contains a JSON object with the attributes \"Server\" which points to a RESTSortServer and \"List\" which is an array of words that will be sent to the server to get sorted.");
+		options.addOption("h", "help", false, "Print this help message.");
+
+		// create the Help message
+		HelpFormatter helpFormatter = new HelpFormatter();
+
+		// Read the command line options
+		CommandLine commandLine = null;
 		try {
-			client = createClientFromConfigFile("config.json");
-		} catch (FileNotFoundException e) {
-			System.err.println("The config file \"config.json\" cannot be found.");
+			commandLine = new DefaultParser().parse(options, args);
+		} catch (ParseException e) {
+			System.err.println("Arguments could not be parsed.");
 			return;
-		} catch (IOException e) {
-			System.err.println("The config file \"config.json\" cannot be read.");
+		}
+
+		// just print the help message
+		if (commandLine.hasOption('h')) {
+			helpFormatter.printHelp("java -jar RESTSortClient.jar", options);
 			return;
-		} catch (JSONException e) {
-			System.err.println("The config file \"config.json\" doesn't contain valid JSON code.");
-			return;
+		}
+
+		// create a client object without command line arguments by parsing the
+		// config file
+		JSONPOSTClient client = null;
+		String configFileName = commandLine.hasOption('c') ? commandLine.getOptionValue('c') : "config.json";
+		if (!commandLine.hasOption("s") || !commandLine.hasOption("l"))
+			try {
+				client = createClientFromConfigFile(configFileName);
+			} catch (FileNotFoundException e) {
+				System.err.println("The config file \"" + configFileName + "\" cannot be found.");
+				return;
+			} catch (IOException e) {
+				System.err.println("The config file \"" + configFileName + "\" cannot be read.");
+				return;
+			} catch (JSONException e) {
+				System.err.println("The config file \"" + configFileName + "\" doesn't contain valid JSON code.");
+				return;
+			}
+
+		// create a client object by parsing the command line argumnts
+		else {
+			try {
+				URL url = new URL(commandLine.getOptionValue('s'));
+				JSONArray requestArray = new JSONArray(commandLine.getOptionValue('l'));
+				client = new JSONPOSTClient(url, requestArray);
+			} catch (MalformedURLException e) {
+				System.err.println("The server argument parameter must point to a valid URL.");
+				return;
+			} catch (JSONException e) {
+				System.err.println("The list parameter must be a valid JSON array.");
+				return;
+			}
 		}
 
 		// get the request and response arrays
