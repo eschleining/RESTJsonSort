@@ -39,7 +39,7 @@ To check if everything is installed properly open a browser window with your tom
 
 Download the files `RESTSortClient.jar` and `config.json` [here](https://github.com/eschleining/RESTJsonSort/releases/latest)
 
-You might have to change the `"Server"` attribute in the file `config.json` if your tomcat listens to another address than http://localhost:8080/ before running the client. 
+You might have to change the `"Server"` attribute in the file `config.json` if your tomcat listens to another address than `http://localhost:8080/` before running the client. 
 
 If you wish to get another list sorted than the default `["harry", "ron", "hermione"]` feel free to change the `"List"` property in `config.json` just make sure to specify a JSON Array. Then execute the client jar from the same working directory that the config file is in:
 ```bash
