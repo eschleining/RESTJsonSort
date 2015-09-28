@@ -1,7 +1,9 @@
 package server;
 
+import java.text.Collator;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -17,9 +19,9 @@ import org.codehaus.jettison.json.JSONException;
 import helper.Helper;
 
 /**
- * The Server object which contains a method to check if everything is
- * installed properly (verifyRESTService()) and the method which receives a
- * JSONArray, sorts it and sends it back to the client.
+ * The Server object which contains a method to check if everything is installed
+ * properly (verifyRESTService()) and the method which receives a JSONArray,
+ * sorts it and sends it back to the client.
  * 
  * @author Eduard Schleining
  *
@@ -63,7 +65,7 @@ public class JSONPOSTServer {
 		try {
 
 			List<String> stringList = Helper.getStringList(jsonArray);
-			Collections.sort(stringList);
+			Collections.sort(stringList, Collator.getInstance(Locale.ENGLISH));
 
 			JSONArray responsePayload = new JSONArray(stringList);
 

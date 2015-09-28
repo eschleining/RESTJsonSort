@@ -8,7 +8,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.Collator;
 import java.util.List;
+import java.util.Locale;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -48,8 +50,9 @@ public class JSONPOSTClient {
 	}
 
 	/**
-	 * Posts the requestArray object to the server specified by the url, receives
-	 * the response an sets the responseArray field before returning it.
+	 * Posts the requestArray object to the server specified by the url,
+	 * receives the response an sets the responseArray field before returning
+	 * it.
 	 * 
 	 * @return if the field responseArray is not null, returns the field
 	 *         responseArray, else does a post request with the requestArray,
@@ -116,8 +119,9 @@ public class JSONPOSTClient {
 	 *            wordArray, this client will send to the server in order to get
 	 *            it sorted.
 	 * 
-	 * @return A JSONPOSTClient Object where the getResponseArray() method can be invoked
-	 *         to receive the sorted list, null if an exception occurred.
+	 * @return A JSONPOSTClient Object where the getResponseArray() method can
+	 *         be invoked to receive the sorted list, null if an exception
+	 *         occurred.
 	 * 
 	 * @throws FileNotFoundException
 	 *             if the file with filename does not exist
@@ -178,13 +182,14 @@ public class JSONPOSTClient {
 
 		// initialize the last pointer to the first position of the array
 		String last = responseArray.getString(0);
+		Collator comparator = Collator.getInstance(Locale.ENGLISH);
 
 		// loop through the array and compare all elements pairwise.
 		for (int i = 1; i < responseArray.length(); i++) {
 			String current = responseArray.getString(i);
 
 			// this elements (current, last) are not in order, return false
-			if (last.compareTo(current) > 0)
+			if (comparator.compare(last, current) > 0)
 				return false;
 
 			// update the last pointer to the current index before increasing
@@ -199,8 +204,8 @@ public class JSONPOSTClient {
 	/**
 	 * Checks if the responseArray is a permutation of requestArray.
 	 * 
-	 * @return true if requestArray contains the same elements as responseArray and vice
-	 *         versa.
+	 * @return true if requestArray contains the same elements as responseArray
+	 *         and vice versa.
 	 * 
 	 * @throws JSONException
 	 *             if the Helper.getStringList(JSONArray) throws the exception
