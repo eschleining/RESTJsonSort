@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>RESTJsonSort</groupId>
 	<artifactId>RESTSortClient</artifactId>
-	<version>1.3-snapshot</version>
+	<version>1.3</version>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
