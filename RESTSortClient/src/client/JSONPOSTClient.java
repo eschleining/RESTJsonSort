@@ -31,6 +31,13 @@ import helper.Helper;
  *
  */
 public class JSONPOSTClient {
+
+	private static final String SERVER_CONFIG_ATTRIBUTE = "Server";
+	private static final String REQUEST_LIST_CONFIG_ATTRIBUTE = "List";
+
+	private static final String DEFAULT_URL = "http://localhost:8080/RESTSortServer/post";
+	private static final String DEFAULT_ARRAY = "[harry,ron,hermione]";
+
 	URL url = null;
 	JSONArray requestArray = null, responseArray = null;
 
@@ -54,8 +61,9 @@ public class JSONPOSTClient {
 	}
 
 	/**
-	 * Posts the requestArray object to the server specified by the url, receives
-	 * the response an sets the responseArray field before returning it.
+	 * Posts the requestArray object to the server specified by the url,
+	 * receives the response an sets the responseArray field before returning
+	 * it.
 	 * 
 	 * @return if the field responseArray is not null, returns the field
 	 *         responseArray, else does a post request with the requestArray,
@@ -112,18 +120,19 @@ public class JSONPOSTClient {
 	}
 
 	/**
-	 * Creates a client object with the requestArray and Server url specified in
-	 * the file.
+	 * Creates a JSON object from a file that should contain the "Server" an
+	 * "List" attributes, specifying which server the list will be send to.
 	 * 
 	 * @param filename
 	 *            the filename of the config file. The file must be in json
-	 *            format and contain a string attribute "Server" which specifies
-	 *            the URL and an array attribute "List" that specifies the
-	 *            wordArray, this client will send to the server in order to get
-	 *            it sorted.
+	 *            format and should contain a string attribute "Server" which
+	 *            specifies the URL and an array attribute "List" that specifies
+	 *            the wordArray, this client will send to the server in order to
+	 *            get it sorted.
 	 * 
-	 * @return A JSONPOSTClient Object where the getResponseArray() method can be invoked
-	 *         to receive the sorted list, null if an exception occurred.
+	 * @return A JSONPOSTClient Object where the getResponseArray() method can
+	 *         be invoked to receive the sorted list, null if an exception
+	 *         occurred.
 	 * 
 	 * @throws FileNotFoundException
 	 *             if the file with filename does not exist
@@ -135,13 +144,8 @@ public class JSONPOSTClient {
 	 * @throws JSONException
 	 *             if the file with filename has no doensn't contain json
 	 */
-	public static JSONPOSTClient createClientFromConfigFile(String filename)
+	public static JSONObject readConfigFromFile(String filename)
 			throws FileNotFoundException, IOException, JSONException {
-		// The url of the RESTSortServer specified in the config file
-		URL url = null;
-
-		// The wordlist specified in the config file
-		JSONArray wordArray = null;
 
 		// Parse the config file
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
@@ -153,16 +157,9 @@ public class JSONPOSTClient {
 		}
 		reader.close();
 
-		// Parse the string into a JSONObject
+		// Parse the string into a JSONObject and return it
 		JSONObject jsonConfig = new JSONObject(stringConfigBuffer.toString());
-
-		// Read the attributes "Server" and "List" from the JSONObject
-		url = new URL(jsonConfig.getString("Server"));
-		wordArray = jsonConfig.getJSONArray("List");
-
-		// create the resulting JSONPostClient object and return it.
-		JSONPOSTClient client = new JSONPOSTClient(url, wordArray);
-		return client;
+		return jsonConfig;
 	}
 
 	/**
@@ -205,8 +202,8 @@ public class JSONPOSTClient {
 	/**
 	 * Checks if the responseArray is a permutation of requestArray.
 	 * 
-	 * @return true if requestArray contains the same elements as responseArray and vice
-	 *         versa.
+	 * @return true if requestArray contains the same elements as responseArray
+	 *         and vice versa.
 	 * 
 	 * @throws JSONException
 	 *             if the Helper.getStringList(JSONArray) throws the exception
@@ -245,8 +242,8 @@ public class JSONPOSTClient {
 
 		// create command line options
 		Options options = new Options();
-		options.addOption("s", "server", true, "A URL pointing to the server to send the wordList to.");
-		options.addOption("l", "list", true, "A JSON array of words that will be sent to the RESTSortServer.");
+		options.addOption("s", "server", true, "A URL pointing to the RESTSortServer to send the wordList to (default \""+DEFAULT_URL+"\").");
+		options.addOption("l", "list", true, "A JSON array of words that will be sent to the RESTSortServer (default \""+DEFAULT_ARRAY+"\").");
 		options.addOption("c", "config", true,
 				"A file that contains a JSON object with the attributes \"Server\" which points to a RESTSortServer and \"List\" which is an array of words that will be sent to the server to get sorted.");
 		options.addOption("h", "help", false, "Print this help message.");
@@ -269,13 +266,28 @@ public class JSONPOSTClient {
 			return;
 		}
 
-		// create a client object without command line arguments by parsing the
-		// config file
+		// create a client with the default url and requestArray
 		JSONPOSTClient client = null;
-		String configFileName = commandLine.hasOption('c') ? commandLine.getOptionValue('c') : "config.json";
-		if (!commandLine.hasOption("s") || !commandLine.hasOption("l"))
+		try {
+			client = new JSONPOSTClient(new URL(DEFAULT_URL), new JSONArray(DEFAULT_ARRAY));
+		} catch (MalformedURLException e1) {
+			System.err.println("The default url is malicious.");
+			return;
+		} catch (JSONException e1) {
+			System.err.println("The default request array is malicious.");
+			return;
+		}
+
+		// parse the config file and set the clients url and requestArray
+		// accordingly
+		if (commandLine.hasOption('c')) {
+			String configFileName = commandLine.getOptionValue('c');
 			try {
-				client = createClientFromConfigFile(configFileName);
+				JSONObject configObject = readConfigFromFile(configFileName);
+				if (configObject.has(SERVER_CONFIG_ATTRIBUTE))
+					client.setUrl(new URL(configObject.getString(SERVER_CONFIG_ATTRIBUTE)));
+				if (configObject.has(REQUEST_LIST_CONFIG_ATTRIBUTE))
+					client.setRequestArray(configObject.getJSONArray(REQUEST_LIST_CONFIG_ATTRIBUTE));
 			} catch (FileNotFoundException e) {
 				System.err.println("The config file \"" + configFileName + "\" cannot be found.");
 				return;
@@ -286,21 +298,24 @@ public class JSONPOSTClient {
 				System.err.println("The config file \"" + configFileName + "\" doesn't contain valid JSON code.");
 				return;
 			}
+		}
 
-		// create a client object by parsing the command line argumnts
-		else {
+		// parse the command line argumens and set the clients url an requestArray accordingly
+		if (commandLine.hasOption('s'))
 			try {
-				URL url = new URL(commandLine.getOptionValue('s'));
-				JSONArray requestArray = new JSONArray(commandLine.getOptionValue('l'));
-				client = new JSONPOSTClient(url, requestArray);
+				client.setUrl(new URL(commandLine.getOptionValue('s')));
 			} catch (MalformedURLException e) {
 				System.err.println("The server argument parameter must point to a valid URL.");
 				return;
+			}
+
+		if (commandLine.hasOption('l'))
+			try {
+				client.setRequestArray(new JSONArray(commandLine.getOptionValue('l')));
 			} catch (JSONException e) {
 				System.err.println("The list parameter must be a valid JSON array.");
 				return;
 			}
-		}
 
 		// get the request and response arrays
 		JSONArray requestArray = client.getRequestArray();
