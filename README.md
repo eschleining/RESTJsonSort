@@ -46,9 +46,9 @@ If you wish to get another list sorted than the default `["harry", "ron", "hermi
 java -jar RESTSortClient.jar
 ```
 
-Alternatively you can specify the `Server` url and `List` url by using the comman line options `-s <arg>` and `-l <arg>`:
+Alternatively you can specify the `Server` url and `List` JSON array by using the comman line options `-s <arg>` and `-l <arg>`:
 ```bash
-java -jar RESTSortClient.jar -s "http://localhost:8080/RESTSortServer/post" -l "[This,list,needs,sorting]"
+java -jar RESTSortClient.jar -s "http://localhost:8080/RESTSortServer/post" -l "[This,list,needs,sorting.]"
 ```
 
 ##How to build:
