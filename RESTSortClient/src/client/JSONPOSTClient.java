@@ -138,7 +138,7 @@ public class JSONPOSTClient {
 		JSONArray wordArray = null;
 
 		// Parse the config file
-		BufferedReader reader = new BufferedReader(new FileReader("config.json"));
+		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		// Construct a string with the contents of the config file
 		StringBuilder stringConfigBuffer = new StringBuilder();
 		String line;
