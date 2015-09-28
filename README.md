@@ -52,7 +52,43 @@ First install all required libraries into your local maven repo by executing `mv
 
 Then in the root directory execute `mvn package` and maven will build the Helper,Client and Server components (the executables will be stored inside the "target" directory of the corresponding components).
 
-If you have configured the manager app for tomcat, you can also use maven to deploy the sort server by defining a server with the id "TomcatServer" in your maven settings.xml, that contains the credentials for a tomcat user with the "manager-script" role (the user must be defined in tomcats "tomcat-users.xml" file with the role "manager-script").
+If you have configured the manager app for tomcat, you can also use maven to deploy the sort server by defining a server with the id `TomcatServer` in your maven `settings.xml`, that contains the credentials for a tomcat user with the `manager-script` role (the user must be defined in tomcats `tomcat-users.xml` file with the role `manager-script`).
+
+In `tomcat-users.xml` (usually under `/var/lib/tomcat7/conf`) add the following:
+```xml
+<tomcat-users>
+...
+  <role rolename="manager-script"/>
+  <user username="your username" password="your secret password" roles="manager-script"/>
+</tomcat-users>
+```
+
+
+In your maven `settings.xml` (usually under `/etc/maven` or `~/.m2`):
+```xml
+<servers>
+...
+		<server>
+			<id>TomcatServer</id>
+			<username>your username</username>
+			<password>your secret password</password>
+		</server>
+</servers>
+```
+
+Should your tomcat manager listen to another address than `http://localhost:8080/manager/text` you will have to add the `url` tag to the `pom.xml` in the `RESTSortServer` directory:
+```xml
+<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<server>TomcatServer</server>
+					<path>/RESTSortServer</path>
+					<url>add your managers url here</url>
+				</configuration>
+</plugin>
+```
 
 For more information about the tomcat manager app, read [this](http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html#Configuring_Manager_Application_Access). If you seek instructions to configure maven, read [this](http://maven.apache.org/ref/3.3.3/maven-settings/settings.html). 
 After you have configured tomcat and maven, you can use the commands `mvn tomcat7:deploy,redeploy,undeploy` from within the RESTSortServer directory.
