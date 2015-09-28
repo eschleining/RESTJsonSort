@@ -17,7 +17,7 @@ import org.codehaus.jettison.json.JSONObject;
 import helper.Helper;
 
 /**
- * A very basic REST client that sends the list to the RESTSortServer specified
+ * A very basic REST client that sends the List to the RESTSortServer specified
  * by the file "config.json", checks that the response list is sorted and a
  * permutation of the request list and outputs the result to standard out.
  * 
@@ -48,11 +48,11 @@ public class JSONPOSTClient {
 	}
 
 	/**
-	 * Posts the wordArray object to the server specified by the url, receives
-	 * the response list and sets the responseArray field before returning it.
+	 * Posts the requestArray object to the server specified by the url, receives
+	 * the response an sets the responseArray field before returning it.
 	 * 
 	 * @return if the field responseArray is not null, returns the field
-	 *         responseArray, else does a post request with the requestList,
+	 *         responseArray, else does a post request with the requestArray,
 	 *         sets the responseArray field to the received result and returns
 	 *         the value of the responseArray afterwards
 	 * 
@@ -116,7 +116,7 @@ public class JSONPOSTClient {
 	 *            wordArray, this client will send to the server in order to get
 	 *            it sorted.
 	 * 
-	 * @return A JSONPOSTClient Object where the doPost() method can be invoked
+	 * @return A JSONPOSTClient Object where the getResponseArray() method can be invoked
 	 *         to receive the sorted list, null if an exception occurred.
 	 * 
 	 * @throws FileNotFoundException
@@ -197,12 +197,9 @@ public class JSONPOSTClient {
 	}
 
 	/**
-	 * Checks if the jsonArray is a permutation of the wordArray field.
+	 * Checks if the responseArray is a permutation of requestArray.
 	 * 
-	 * @param jsonArray
-	 *            the array to check against the wordArray field.
-	 * 
-	 * @return true if jsonArray contains the same elements as wordList and vice
+	 * @return true if requestArray contains the same elements as responseArray and vice
 	 *         versa.
 	 * 
 	 * @throws JSONException
