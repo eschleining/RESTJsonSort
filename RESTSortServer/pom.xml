@@ -22,6 +22,7 @@
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<warName>RESTSortServer</warName>
 				</configuration>
 			</plugin>
 			<plugin>
