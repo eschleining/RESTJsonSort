@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>RESTJsonSort</groupId>
-	<artifactId>Server</artifactId>
+	<artifactId>RESTSortServer</artifactId>
 	<version>1.1</version>
 	<packaging>war</packaging>
 	<build>
@@ -22,7 +22,6 @@
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<warName>RESTSortServer</warName>
 				</configuration>
 			</plugin>
 			<plugin>

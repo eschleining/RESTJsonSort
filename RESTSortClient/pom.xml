@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>RESTJsonSort</groupId>
-	<artifactId>Client</artifactId>
+	<artifactId>RESTSortClient</artifactId>
 	<version>1.1</version>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -36,7 +36,7 @@
 							<descriptorRefs>
 								<descriptorRef>jar-with-dependencies</descriptorRef>
 							</descriptorRefs>
-							<finalName>RESTSortClient</finalName>
+							<finalName>${artifactId}-${version}</finalName>
 							<appendAssemblyId>false</appendAssemblyId>
 						</configuration>
 					</execution>
