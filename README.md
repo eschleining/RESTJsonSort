@@ -31,7 +31,7 @@ sudo apt-get install maven3
 
 ###Server:
 
-Download and copy the file `RESTSortServer.war` [here](https://github.com/eschleining/RESTJsonSort/releases/latest) and copy it into the webapps folder of your tomcat7 installation (usually `/var/lib/tomcat7/webapps`).
+Download the file `RESTSortServer.war` [here](https://github.com/eschleining/RESTJsonSort/releases/latest) and copy it into the webapps folder of your tomcat7 installation (usually `/var/lib/tomcat7/webapps`).
 
 To check if everything is installed properly open a browser window with your tomcat address and the suffix `RESTSortServer/verify` (e.g. in my installation the address is: `http://localhost:8080/RESTSortServer/verify` ). If you see the text `The service is running properly.` then the server is behaving as expected.
 
@@ -84,7 +84,7 @@ In your maven `settings.xml` (usually under `/etc/maven` or `~/.m2`):
 </servers>
 ```
 
-Should your tomcat manager listen to another address than `http://localhost:8080/manager/text` you will have to add the `url` tag to the `pom.xml` in the `RESTSortServer` directory:
+Should your tomcat manager listen on another address than `http://localhost:8080/manager/text` you will have to add the `url` tag to the `pom.xml` in the `RESTSortServer` directory:
 ```xml
 <plugin>
 				<groupId>org.apache.tomcat.maven</groupId>

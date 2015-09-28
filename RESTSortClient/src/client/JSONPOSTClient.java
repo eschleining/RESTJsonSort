@@ -9,7 +9,9 @@ import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.Collator;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -181,13 +183,14 @@ public class JSONPOSTClient {
 
 		// initialize the last pointer to the first position of the array
 		String last = responseArray.getString(0);
+		Collator comparator = Collator.getInstance(Locale.ENGLISH);
 
 		// loop through the array and compare all elements pairwise.
 		for (int i = 1; i < responseArray.length(); i++) {
 			String current = responseArray.getString(i);
 
 			// this elements (current, last) are not in order, return false
-			if (last.compareTo(current) > 0)
+			if (comparator.compare(last, current) > 0)
 				return false;
 
 			// update the last pointer to the current index before increasing
