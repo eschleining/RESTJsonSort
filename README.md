@@ -4,43 +4,51 @@ Sample program to demonstrate a REST+JSON Server. The client sends a JSON array 
 
 ##Requirements:
 
-###Oracle Java 7:
-
-`sudo apt-get add-repository ppa:webupd8team/java`
-
-`sudo apt-get install oracle-java7-installer`
-
+###Oracle Java 7 JDK:
+Download and install Oracle Java SE [here](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html) or if you have apt, install it like follows:
+```bash
+sudo apt-get add-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java7-installer
+```
 ###Apache Tomcat 7:
-
-`sudo apt-get install tomcat7`
+Download and install Apache tomcat 7 [here](http://tomcat.apache.org/download-70.cgi) or if you have apt, install it like follows:
+```bash
+sudo apt-get update
+sudo apt-get install tomcat7
+```
 
 ###Apache Maven 3:
-
-If you wish to alter the source code, you can use maven (v 3) to recreate the war (server) and jar (client) file.
-
-`sudo apt-get install maven3`
+If you wish to alter the source code, you can use maven 3 to recreate the war (server) and jar (client) file.
+Download and intall Apache maven 3 [here](http://maven.apache.org/download.cgi) or if you have apt, install it like follows:
+```bash
+sudo add-apt-repository ppa:andrei-pozolotin/maven3
+sudo apt-get update
+sudo apt-get install maven3
+```
 
 
 ##How to run:
 
-Download and copy the server war file into the "webapps" (usually /var/lib/tomcat7/webapps) folder 
+Download and copy the [server war file](https://github.com/eschleining/RESTJsonSort/releases/download/v1.1/RESTSortServer.war) into the "webapps" (usually /var/lib/tomcat7/webapps) folder 
 of your tomcat7 installation:
+```bash
+wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.1/RESTSortServer.war
+sudo cp RESTSortServer.war /var/lib/tomcat7/webapps/
+```
 
-`wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.1/RESTSortServer.war`
+To check if everything is installed properly open a browser window with your tomcat address and the suffix `RESTSortServer/verify` (e.g. in my installation the address is: http://localhost:8080/RESTSortServer/verify ). If you see the text `The service is running properly.` then the server is behaving as expected.
 
-`sudo cp RESTSortServer.war /var/lib/tomcat7/webapps/`
+To run the client it is enough to downlad the [config.json](https://github.com/eschleining/RESTJsonSort/releases/download/v1.1/config.json) file and the [client jar](https://github.com/eschleining/RESTJsonSort/releases/download/v1.1/RESTSortClient.jar):
+```bash
+wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.1/config.json
+wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.1/RESTSortClient.jar
+```
 
-To check if everything is installed properly open a browser window with your tomcat address and the suffix `RESTSortServer/verify` (e.g. in my installation the address is: `http://localhost:8080/RESTSortServer/verify`). If you see the text `The service is running properly.` then the server is behaving as expected.
-
-To run the client it is enough to downlad the "config.json" file and the client jar:
-
-`wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.1/config.json`
-
-`wget https://github.com/eschleining/RESTJsonSort/releases/download/v1.1/RESTSortClient.jar`
-
-You might have to change the "Server" attribute of the file "config.json" if your tomcat listens to another address than "http://localhost:8080/" before running the client jar. If you wish to get another list sorted than the default `["harry", "ron", "hermione"]` feel free to change the `"List"` property of the config.json just make sure to specify a JSON Array. Then execute the client jar from the same working directory that the "config.json" is in:
-
-`java -jar RESTSortClient.jar`
+You might have to change the "Server" attribute in the file "config.json" if your tomcat listens to another address than "http://localhost:8080/" before running the client jar. If you wish to get another list sorted than the default `["harry", "ron", "hermione"]` feel free to change the `"List"` property of the config.json just make sure to specify a JSON Array. Then execute the client jar from the same working directory that the "config.json" is in:
+```bash
+java -jar RESTSortClient.jar
+```
 
 ##How to build:
 
