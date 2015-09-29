@@ -1,9 +1,11 @@
 package client;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -122,50 +124,6 @@ public class SortClient {
 	}
 
 	/**
-	 * Creates a JSON object from a file that should contain the attributes
-	 * "uri", "array" and "locale", specifying which uri the array and locale
-	 * will be send to.
-	 * 
-	 * @param filename
-	 *            the filename of the config file. The file must be in json
-	 *            format and should contain a string attribute "Server" which
-	 *            specifies the URL and an array attribute "List" that specifies
-	 *            the wordArray, this client will send to the server in order to
-	 *            get it sorted.
-	 * 
-	 * @return A JSONPOSTClient Object where the getResponseArray() method can
-	 *         be invoked to receive the sorted list, null if an exception
-	 *         occurred.
-	 * 
-	 * @throws FileNotFoundException
-	 *             if the file with filename does not exist
-	 * 
-	 * @throws IOException
-	 *             if a FileInputStream cannot be opened on the file with
-	 *             filename
-	 * 
-	 * @throws JSONException
-	 *             if the file with filename has no doensn't contain json
-	 */
-	public static JSONObject readConfigFromFile(String filename)
-			throws FileNotFoundException, IOException, JSONException {
-
-		// Parse the config file
-		BufferedReader reader = new BufferedReader(new FileReader(filename));
-		// Construct a string with the contents of the config file
-		StringBuilder stringConfigBuffer = new StringBuilder();
-		String line;
-		while ((line = reader.readLine()) != null) {
-			stringConfigBuffer.append(line);
-		}
-		reader.close();
-
-		// Parse the string into a JSONObject and return it
-		JSONObject jsonConfig = new JSONObject(stringConfigBuffer.toString());
-		return jsonConfig;
-	}
-
-	/**
 	 * Checks whether the reponseArray is sorted or not. Returns true if it is,
 	 * false otherwise.
 	 * 
@@ -234,9 +192,9 @@ public class SortClient {
 		return responseList.isEmpty();
 	}
 
-	// Strings used for command line options
+	// Strings used for command line options and to parse config
 	private static final String URI_OPTION_SHORT = "u";
-	private static final String URI_OPTION_LONG = "uri";
+	private static final String URI_OPTION_LONG = Helper.URI_PARAMETER_NAME;
 	private static final String URI_OPTION_DESCRIPTION = "An URI pointing to the RESTSortServer to send the wordList to (default \""
 			+ DEFAULT_URI + "\").";
 
@@ -260,6 +218,96 @@ public class SortClient {
 	private static final String HELP_OTION_LONG = "help";
 	private static final String HELP_OPTION_DESCRIPTION = "Print this help message.";
 
+	// create command line options
+	public static final Options options = new Options()
+			.addOption(URI_OPTION_SHORT, URI_OPTION_LONG, true, URI_OPTION_DESCRIPTION)
+			.addOption(ARRAY_OPTION_SHORT, ARRAY_OPTION_LONG, true, ARRAY_OPTION_DESCRIPTION)
+			.addOption(CONFIG_OPTION_SHORT, CONFIG_OPTION_LONG, true, CONFIG_OPTION_DESCRIPTION)
+			.addOption(LOCLAE_OPTION_SHORT, LOCALE_OPTION_LONG, true, LOCALE_OPTION_DESCRIPTION)
+			.addOption(HELP_OPTION_SHORT, HELP_OTION_LONG, false, HELP_OPTION_DESCRIPTION);
+
+	/**
+	 * Sets the fields of this to the values specified by the commandLine
+	 * parameter.
+	 * 
+	 * @param commandLine
+	 *            the commandLine to read the values for "uri (-u --uri <arg>)",
+	 *            "locale (-l --locale <arg>)", "-c --config <arg>" and
+	 *            "array (-a --array <arg>)" from.
+	 * 
+	 * @throws URISyntaxException
+	 *             if the uri parameter is given but its argument is not a valid
+	 *             URI
+	 * 
+	 * @throws JSONException
+	 *             if the array parameter is given but not a valid JSON array
+	 * 
+	 * @throws IOException
+	 *             if the config parameter is given but the Input stream for the
+	 *             config file cannot be read
+	 * 
+	 * @throws FileNotFoundException
+	 *             if the config parameter is given but the config file cannot
+	 *             be found
+	 */
+	public void setConfigFromCommandLine(CommandLine commandLine)
+			throws URISyntaxException, JSONException, FileNotFoundException, IOException {
+		if (commandLine.hasOption(URI_OPTION_SHORT))
+			setUri(new URI(commandLine.getOptionValue(URI_OPTION_SHORT)));
+		if (commandLine.hasOption(ARRAY_OPTION_SHORT))
+			setRequestArray(new JSONArray(commandLine.getOptionValue(ARRAY_OPTION_SHORT)));
+		if (commandLine.hasOption(LOCLAE_OPTION_SHORT))
+			setLocale(new Locale(commandLine.getOptionValue(LOCLAE_OPTION_SHORT)));
+		if (commandLine.hasOption(CONFIG_OPTION_SHORT)) {
+			String configFileName = commandLine.getOptionValue(CONFIG_OPTION_SHORT);
+			setConfigFromInputStream(new FileInputStream(configFileName));
+		}
+	}
+
+	/**
+	 * Sets the fields of this to the values in the input stream.
+	 * 
+	 * @param inputStream
+	 *            input stream of that contains a jsonObject. The stream must be
+	 *            in json format and should contain a string attribute "uri"
+	 *            which specifies the URI and an array attribute "array" that
+	 *            specifies the wordArray, this client will send to the server
+	 *            in order to get it sorted, additionally it can have a "locale"
+	 *            field with a valid locale string.
+	 * 
+	 * @throws IOException
+	 *             if the InputStream cannot be read
+	 * 
+	 * @throws JSONException
+	 *             if the InputStream doensn't contain json
+	 * 
+	 * @throws URISyntaxException
+	 *             if the InputStream contains a "uri" field which is no valid
+	 *             URI
+	 */
+	public void setConfigFromInputStream(InputStream inputStream)
+			throws IOException, JSONException, URISyntaxException {
+
+		// Parse the config file
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+		// Construct a string with the contents of the config file
+		StringBuilder stringConfigBuffer = new StringBuilder();
+		String line;
+		while ((line = reader.readLine()) != null) {
+			stringConfigBuffer.append(line);
+		}
+		reader.close();
+
+		// Parse the string into a JSONObject and return it
+		JSONObject jsonConfig = new JSONObject(stringConfigBuffer.toString());
+		if (jsonConfig.has(URI_OPTION_LONG))
+			setUri(new URI(jsonConfig.getString(URI_OPTION_LONG)));
+		if (jsonConfig.has(ARRAY_OPTION_LONG))
+			setRequestArray(jsonConfig.getJSONArray(ARRAY_OPTION_LONG));
+		if (jsonConfig.has(LOCALE_OPTION_LONG))
+			setLocale(new Locale(jsonConfig.getString(LOCALE_OPTION_LONG)));
+	}
+
 	/**
 	 * Creates a SortClient object as specified in a config file or by command
 	 * line arguments, calls its getResponseArray() method and its check methods
@@ -269,13 +317,6 @@ public class SortClient {
 	 *            command line arguments
 	 */
 	public static void main(String[] args) {
-
-		// create command line options
-		Options options = new Options().addOption(URI_OPTION_SHORT, URI_OPTION_LONG, true, URI_OPTION_DESCRIPTION)
-				.addOption(ARRAY_OPTION_SHORT, ARRAY_OPTION_LONG, true, ARRAY_OPTION_DESCRIPTION)
-				.addOption(CONFIG_OPTION_SHORT, CONFIG_OPTION_LONG, true, CONFIG_OPTION_DESCRIPTION)
-				.addOption(LOCLAE_OPTION_SHORT, LOCALE_OPTION_LONG, true, LOCALE_OPTION_DESCRIPTION)
-				.addOption(HELP_OPTION_SHORT, HELP_OTION_LONG, false, HELP_OPTION_DESCRIPTION);
 
 		// create the Help message
 		HelpFormatter helpFormatter = new HelpFormatter();
@@ -298,47 +339,21 @@ public class SortClient {
 		// create a client with the default uri,locale and requestArray
 		SortClient client = new SortClient();
 
-		// parse the config file and set the clients url,locale and requestArray
-		// accordingly
-		if (commandLine.hasOption(CONFIG_OPTION_SHORT)) {
-			String configFileName = commandLine.getOptionValue(CONFIG_OPTION_SHORT);
-			try {
-				JSONObject configObject = readConfigFromFile(configFileName);
-				if (configObject.has(URI_OPTION_LONG))
-					client.setUri(new URI(configObject.getString(URI_OPTION_LONG)));
-				if (configObject.has(ARRAY_OPTION_LONG))
-					client.setRequestArray(configObject.getJSONArray(ARRAY_OPTION_LONG));
-				if (configObject.has(LOCALE_OPTION_LONG))
-					client.setLocale(new Locale(configObject.getString(LOCALE_OPTION_LONG)));
-			} catch (FileNotFoundException e) {
-				System.err.println("The config file \"" + configFileName + "\" cannot be found.");
-				return;
-			} catch (IOException e) {
-				System.err.println("The config file \"" + configFileName + "\" cannot be read.");
-				return;
-			} catch (JSONException e) {
-				System.err.println("The config file \"" + configFileName + "\" doesn't contain valid JSON code.");
-				return;
-			} catch (URISyntaxException e) {
-				System.err.println("The config file \"" + configFileName + "\" doesn't contain a valid URI.");
-				return;
-			}
-		}
-
 		// parse the command line arguments and set the clients uri,locale and
 		// requestArray accordingly
 		try {
-			if (commandLine.hasOption(URI_OPTION_SHORT))
-				client.setUri(new URI(commandLine.getOptionValue(URI_OPTION_SHORT)));
-			if (commandLine.hasOption(ARRAY_OPTION_SHORT))
-				client.setRequestArray(new JSONArray(commandLine.getOptionValue(ARRAY_OPTION_SHORT)));
-			if (commandLine.hasOption(LOCLAE_OPTION_SHORT))
-				client.setLocale(new Locale(commandLine.getOptionValue(LOCLAE_OPTION_SHORT)));
+			client.setConfigFromCommandLine(commandLine);
 		} catch (URISyntaxException e) {
 			System.err.println("The uri argument parameter must point to a valid URI.");
 			return;
 		} catch (JSONException e) {
 			System.err.println("The list parameter must be a valid JSON array.");
+			return;
+		} catch (FileNotFoundException e) {
+			System.err.println("The config file cannot be found.");
+			return;
+		} catch (IOException e) {
+			System.err.println("The config file cannot be read.");
 			return;
 		}
 
