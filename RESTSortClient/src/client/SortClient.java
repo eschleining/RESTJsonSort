@@ -37,7 +37,7 @@ import helper.Helper;
  */
 public class SortClient {
 
-	private static final String SERVER_CONFIG_ATTRIBUTE = "url";
+	private static final String SERVER_CONFIG_ATTRIBUTE = "uri";
 
 	private static final String DEFAULT_URI = "http://localhost:8080/RESTSortServer/sort";
 
