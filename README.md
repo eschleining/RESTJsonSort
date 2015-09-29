@@ -44,7 +44,7 @@ Run the jar like follows:
 java -jar RESTSortClient.jar
 ```
 
-If your server listens on another address than the default `http://localhost:8080/RESTSortServer`, you need to specify this in the config file that contains a JSON object with the attribute `"uri"` that points to your servers address. If you wish to get another list sorted than the default `["harry", "ron", "hermione"]` feel free to change the `"array"` property in `config.json` just make sure to specify a JSON array. If you wish to use another locale collator than `en_US` to sort the list, you can change the `"locale"` attribute in the config file (more information about supported locales can be found [here](http://www.oracle.com/technetwork/java/javase/javase7locales-334809.html)). Then execute the client jar from the same working directory that the config file is in:
+If your server listens on another address than the default `http://localhost:8080/RESTSortServer`, you need to specify this in the config file that contains a JSON object with the attribute `"uri"` that points to your servers address. If you wish to get another list sorted than the default `["harry", "ron", "hermione"]` feel free to change the `"array"` property in `config.json` just make sure to specify a JSON array. If you wish to use another locale collator than `en_US` to sort the list, you can change the `"locale"` attribute in the config file (more information about supported locales can be found [here](http://www.oracle.com/technetwork/java/javase/javase7locales-334809.html)). Then execute the client jar with the parameter `-c <arg>` and point to the `config.json`:
 ```bash
 java -jar RESTSortClient.jar -c "config.json"
 ```
