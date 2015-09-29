@@ -37,8 +37,6 @@ import helper.Helper;
  */
 public class SortClient {
 
-	private static final String SERVER_CONFIG_ATTRIBUTE = "uri";
-
 	private static final String DEFAULT_URI = "http://localhost:8080/RESTSortServer";
 
 	private URI uri = null;
@@ -227,6 +225,32 @@ public class SortClient {
 		return responseList.isEmpty();
 	}
 
+	// Strings used for command line options
+	private static final String URI_OPTION_SHORT = "u";
+	private static final String URI_OPTION_LONG = "uri";
+	private static final String URI_OPTION_DESCRIPTION = "An URI pointing to the RESTSortServer to send the wordList to (default \""
+			+ DEFAULT_URI + "\").";
+
+	private static final String ARRAY_OPTION_SHORT = "a";
+	private static final String ARRAY_OPTION_LONG = Helper.REQUEST_ARRAY_PARAMETER_NAME;
+	private static final String ARRAY_OPTION_DESCRIPTION = "A JSON array of words that will be sent to the RESTSortServer (default \""
+			+ Helper.DEFAULT_REQUEST_ARRAY + "\").";
+
+	private static final String CONFIG_OPTION_SHORT = "c";
+	private static final String CONFIG_OPTION_LONG = "config";
+	private static final String CONFIG_OPTION_DESCRIPTION = "A file that contains a JSON object with the attributes \"uri\" which points to a RESTSortServer, \""
+			+ Helper.LOCALE_PARAMETER_NAME + "\" that is the locale to be used when sorting and \""
+			+ Helper.REQUEST_ARRAY_PARAMETER_NAME
+			+ "\" which is an array of words that will be sent to the server to get sorted.";
+
+	private static final String LOCLAE_OPTION_SHORT = "l";
+	private static final String LOCALE_OPTION_LONG = Helper.LOCALE_PARAMETER_NAME;
+	private static final String LOCALE_OPTION_DESCRIPTION = "The locale that is used to sort the array.";
+
+	private static final String HELP_OPTION_SHORT = "h";
+	private static final String HELP_OTION_LONG = "help";
+	private static final String HELP_OPTION_DESCRIPTION = "Print this help message.";
+
 	/**
 	 * Creates a SortClient object as specified in a config file or by command
 	 * line arguments, calls its getResponseArray() method and its check methods
@@ -238,19 +262,11 @@ public class SortClient {
 	public static void main(String[] args) {
 
 		// create command line options
-		Options options = new Options();
-		options.addOption("u", "uri", true,
-				"An URI pointing to the RESTSortServer to send the wordList to (default \"" + DEFAULT_URI + "\").");
-		options.addOption("a", Helper.REQUEST_ARRAY_PARAMETER_NAME, true,
-				"A JSON array of words that will be sent to the RESTSortServer (default \""
-						+ Helper.DEFAULT_REQUEST_ARRAY + "\").");
-		options.addOption("c", "config", true,
-				"A file that contains a JSON object with the attributes \"uri\" which points to a RESTSortServer, \""
-						+ Helper.LOCALE_PARAMETER_NAME + "\" that is the locale to be used when sorting and \""
-						+ Helper.REQUEST_ARRAY_PARAMETER_NAME
-						+ "\" which is an array of words that will be sent to the server to get sorted.");
-		options.addOption("l", Helper.LOCALE_PARAMETER_NAME, true, "The locale that is used to sort the array.");
-		options.addOption("h", "help", false, "Print this help message.");
+		Options options = new Options().addOption(URI_OPTION_SHORT, URI_OPTION_LONG, true, URI_OPTION_DESCRIPTION)
+				.addOption(ARRAY_OPTION_SHORT, ARRAY_OPTION_LONG, true, ARRAY_OPTION_DESCRIPTION)
+				.addOption(CONFIG_OPTION_SHORT, CONFIG_OPTION_LONG, true, CONFIG_OPTION_DESCRIPTION)
+				.addOption(LOCLAE_OPTION_SHORT, LOCALE_OPTION_LONG, true, LOCALE_OPTION_DESCRIPTION)
+				.addOption(HELP_OPTION_SHORT, HELP_OTION_LONG, false, HELP_OPTION_DESCRIPTION);
 
 		// create the Help message
 		HelpFormatter helpFormatter = new HelpFormatter();
@@ -265,7 +281,7 @@ public class SortClient {
 		}
 
 		// just print the help message
-		if (commandLine.hasOption('h')) {
+		if (commandLine.hasOption(HELP_OPTION_SHORT)) {
 			helpFormatter.printHelp("java -jar RESTSortClient.jar", options);
 			return;
 		}
@@ -275,16 +291,16 @@ public class SortClient {
 
 		// parse the config file and set the clients url,locale and requestArray
 		// accordingly
-		if (commandLine.hasOption('c')) {
-			String configFileName = commandLine.getOptionValue('c');
+		if (commandLine.hasOption(CONFIG_OPTION_SHORT)) {
+			String configFileName = commandLine.getOptionValue(CONFIG_OPTION_SHORT);
 			try {
 				JSONObject configObject = readConfigFromFile(configFileName);
-				if (configObject.has(SERVER_CONFIG_ATTRIBUTE))
-					client.setUri(new URI(configObject.getString(SERVER_CONFIG_ATTRIBUTE)));
-				if (configObject.has(Helper.REQUEST_ARRAY_PARAMETER_NAME))
-					client.setRequestArray(configObject.getJSONArray(Helper.REQUEST_ARRAY_PARAMETER_NAME));
-				if (configObject.has(Helper.LOCALE_PARAMETER_NAME))
-					client.setLocale(new Locale(configObject.getString(Helper.LOCALE_PARAMETER_NAME)));
+				if (configObject.has(URI_OPTION_LONG))
+					client.setUri(new URI(configObject.getString(URI_OPTION_LONG)));
+				if (configObject.has(ARRAY_OPTION_LONG))
+					client.setRequestArray(configObject.getJSONArray(ARRAY_OPTION_LONG));
+				if (configObject.has(LOCALE_OPTION_LONG))
+					client.setLocale(new Locale(configObject.getString(LOCALE_OPTION_LONG)));
 			} catch (FileNotFoundException e) {
 				System.err.println("The config file \"" + configFileName + "\" cannot be found.");
 				return;
@@ -302,24 +318,20 @@ public class SortClient {
 
 		// parse the command line arguments and set the clients uri,locale and
 		// requestArray accordingly
-		if (commandLine.hasOption('u'))
-			try {
-				client.setUri(new URI(commandLine.getOptionValue('u')));
-			} catch (URISyntaxException e) {
-				System.err.println("The server argument parameter must point to a valid URL.");
-				return;
-			}
-
-		if (commandLine.hasOption('a'))
-			try {
-				client.setRequestArray(new JSONArray(commandLine.getOptionValue('a')));
-			} catch (JSONException e) {
-				System.err.println("The list parameter must be a valid JSON array.");
-				return;
-			}
-
-		if (commandLine.hasOption('l'))
-			client.setLocale(new Locale(commandLine.getOptionValue('l')));
+		try {
+			if (commandLine.hasOption(URI_OPTION_SHORT))
+				client.setUri(new URI(commandLine.getOptionValue(URI_OPTION_SHORT)));
+			if (commandLine.hasOption(ARRAY_OPTION_SHORT))
+				client.setRequestArray(new JSONArray(commandLine.getOptionValue(ARRAY_OPTION_SHORT)));
+			if (commandLine.hasOption(LOCLAE_OPTION_SHORT))
+				client.setLocale(new Locale(commandLine.getOptionValue(LOCLAE_OPTION_SHORT)));
+		} catch (URISyntaxException e) {
+			System.err.println("The uri argument parameter must point to a valid URI.");
+			return;
+		} catch (JSONException e) {
+			System.err.println("The list parameter must be a valid JSON array.");
+			return;
+		}
 
 		// get the request and response arrays
 		JSONArray requestArray = client.getRequestArray();
