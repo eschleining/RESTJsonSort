@@ -40,7 +40,6 @@
 			<artifactId>jersey-server</artifactId>
 			<version>1.8</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-json</artifactId>
@@ -49,7 +48,7 @@
 		<dependency>
 			<groupId>RESTJsonSort</groupId>
 			<artifactId>RESTSortHelper</artifactId>
-			<version>1.0</version>
+			<version>1.4</version>
 		</dependency>
 	</dependencies>
 </project>

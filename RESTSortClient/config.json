@@ -1,6 +1,8 @@
 {
-	"Server"	:	"http://localhost:8080/RESTSortServer/post",
+	"uri"	:	"http://localhost:8080/RESTSortServer/post",
 	
-	"List"	:	["harry", "ron", "hermione"]
+	"array"	:	["harry", "ron", "hermione"],
+	
+	"locale": "en"
 	 
 }

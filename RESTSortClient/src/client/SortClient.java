@@ -4,14 +4,13 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.Collator;
 import java.util.List;
 import java.util.Locale;
+
+import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -21,6 +20,10 @@ import org.apache.commons.cli.ParseException;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 import helper.Helper;
 
@@ -32,23 +35,30 @@ import helper.Helper;
  * @author Eduard Schleining
  *
  */
-public class JSONPOSTClient {
+public class SortClient {
 
-	private static final String SERVER_CONFIG_ATTRIBUTE = "Server";
-	private static final String REQUEST_LIST_CONFIG_ATTRIBUTE = "List";
+	private static final String SERVER_CONFIG_ATTRIBUTE = "url";
 
-	private static final String DEFAULT_URL = "http://localhost:8080/RESTSortServer/post";
-	private static final String DEFAULT_ARRAY = "[harry,ron,hermione]";
+	private static final String DEFAULT_URI = "http://localhost:8080/RESTSortServer/sort";
 
-	URL url = null;
-	JSONArray requestArray = null, responseArray = null;
+	private URI uri = null;
+	private JSONArray requestArray = null, responseArray = null;
+	private Locale locale = null;
 
-	public URL getUrl() {
-		return url;
+	public URI getUri() {
+		return uri;
 	}
 
-	public void setUrl(URL url) {
-		this.url = url;
+	public Locale getLocale() {
+		return locale;
+	}
+
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
+
+	public void setUri(URI uri) {
+		this.uri = uri;
 	}
 
 	public JSONArray getRequestArray() {
@@ -68,62 +78,45 @@ public class JSONPOSTClient {
 	 * it.
 	 * 
 	 * @return if the field responseArray is not null, returns the field
-	 *         responseArray, else does a post request with the requestArray,
+	 *         responseArray, else does a get request with the requestArray and locale parameters,
 	 *         sets the responseArray field to the received result and returns
 	 *         the value of the responseArray afterwards
-	 * 
-	 * @throws IOException
-	 *             if a connection to the url is not possible, has no output or
-	 *             no input Stream.
-	 * 
-	 * @throws JSONException
-	 *             if the input stream cannot be parsed into a JSONArray object
 	 */
-	public JSONArray getResponseArray() throws IOException, JSONException {
+	public JSONArray getResponseArray() {
 
 		// if responseArray is already set, return it
 		if (responseArray != null)
 			return responseArray;
 
-		// else send the wordlist to the specified URL and receive the
-		// responseArray
-
-		// connect to the rest-json server
-		URLConnection connection = url.openConnection();
-		connection.setRequestProperty("Content-Type", "application/json");
-		connection.setDoOutput(true);
-		connection.connect();
-
-		// send the List JSONArray
-		OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
-		// System.out.println(wordArray.toString());
-		out.write(requestArray.toString());
-		out.close();
-
-		// receive the response List
-		BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-		String line;
-		StringBuilder stringBuffer = new StringBuilder();
-		while ((line = in.readLine()) != null) {
-			stringBuffer.append(line);
-		}
-		in.close();
-
-		// check that the response is a JSONArray and set the responseArray
-		// field
-		responseArray = new JSONArray(stringBuffer.toString());
+		Client client = Client.create(new DefaultClientConfig());
+		WebResource resource = client.resource(uri);
+		resource.accept(MediaType.APPLICATION_JSON);
+		responseArray = resource.queryParam(Helper.LOCALE_PARAMETER_NAME, locale.toString())
+				.queryParam(Helper.REQUEST_ARRAY_PARAMETER_NAME, requestArray.toString()).get(JSONArray.class);
 
 		return responseArray;
 	}
 
-	public JSONPOSTClient(URL url, JSONArray wordArray) {
-		this.url = url;
-		this.requestArray = wordArray;
+	/**
+	 * Creates a Sort client object with default values for uri,locale and
+	 * requestArray
+	 * 
+	 */
+	public SortClient() {
+		try {
+			this.uri = new URI(DEFAULT_URI);
+			this.requestArray = new JSONArray(Helper.DEFAULT_REQUEST_ARRAY);
+			this.locale = new Locale(Helper.DEFAULT_LOCALE);
+		} catch (URISyntaxException e) {
+			System.err.println("The default URI(" + DEFAULT_URI + ") is not parsable.");
+		} catch (JSONException e) {
+			System.err.println("The default array (" + Helper.DEFAULT_REQUEST_ARRAY + ") is not parsable.");
+		}
 	}
 
 	/**
-	 * Creates a JSON object from a file that should contain the "Server" an
-	 * "List" attributes, specifying which server the list will be send to.
+	 * Creates a JSON object from a file that should contain the attributes "uri", "array" and
+	 * "locale", specifying which uri the array and locale will be send to.
 	 * 
 	 * @param filename
 	 *            the filename of the config file. The file must be in json
@@ -234,9 +227,9 @@ public class JSONPOSTClient {
 	}
 
 	/**
-	 * Creates a JSONPOSTClient object as specified in a config file or by
-	 * command line arguments, calls its getResponseArray() method and its check
-	 * methods and outputs the results.
+	 * Creates a SortClient object as specified in a config file or by command
+	 * line arguments, calls its getResponseArray() method and its check methods
+	 * and outputs the results.
 	 * 
 	 * @param args
 	 *            command line arguments
@@ -245,10 +238,17 @@ public class JSONPOSTClient {
 
 		// create command line options
 		Options options = new Options();
-		options.addOption("s", "server", true, "A URL pointing to the RESTSortServer to send the wordList to (default \""+DEFAULT_URL+"\").");
-		options.addOption("l", "list", true, "A JSON array of words that will be sent to the RESTSortServer (default \""+DEFAULT_ARRAY+"\").");
+		options.addOption("u", "uri", true,
+				"An URI pointing to the RESTSortServer to send the wordList to (default \"" + DEFAULT_URI + "\").");
+		options.addOption("a", Helper.REQUEST_ARRAY_PARAMETER_NAME, true,
+				"A JSON array of words that will be sent to the RESTSortServer (default \""
+						+ Helper.DEFAULT_REQUEST_ARRAY + "\").");
 		options.addOption("c", "config", true,
-				"A file that contains a JSON object with the attributes \"Server\" which points to a RESTSortServer and \"List\" which is an array of words that will be sent to the server to get sorted.");
+				"A file that contains a JSON object with the attributes \"uri\" which points to a RESTSortServer, \""
+						+ Helper.LOCALE_PARAMETER_NAME + "\" that is the locale to be used when sorting and \""
+						+ Helper.REQUEST_ARRAY_PARAMETER_NAME
+						+ "\" which is an array of words that will be sent to the server to get sorted.");
+		options.addOption("l", Helper.LOCALE_PARAMETER_NAME, true, "The locale that is used to sort the array.");
 		options.addOption("h", "help", false, "Print this help message.");
 
 		// create the Help message
@@ -269,28 +269,21 @@ public class JSONPOSTClient {
 			return;
 		}
 
-		// create a client with the default url and requestArray
-		JSONPOSTClient client = null;
-		try {
-			client = new JSONPOSTClient(new URL(DEFAULT_URL), new JSONArray(DEFAULT_ARRAY));
-		} catch (MalformedURLException e1) {
-			System.err.println("The default url is malicious.");
-			return;
-		} catch (JSONException e1) {
-			System.err.println("The default request array is malicious.");
-			return;
-		}
+		// create a client with the default uri,locale and requestArray
+		SortClient client = new SortClient();
 
-		// parse the config file and set the clients url and requestArray
+		// parse the config file and set the clients url,locale and requestArray
 		// accordingly
 		if (commandLine.hasOption('c')) {
 			String configFileName = commandLine.getOptionValue('c');
 			try {
 				JSONObject configObject = readConfigFromFile(configFileName);
 				if (configObject.has(SERVER_CONFIG_ATTRIBUTE))
-					client.setUrl(new URL(configObject.getString(SERVER_CONFIG_ATTRIBUTE)));
-				if (configObject.has(REQUEST_LIST_CONFIG_ATTRIBUTE))
-					client.setRequestArray(configObject.getJSONArray(REQUEST_LIST_CONFIG_ATTRIBUTE));
+					client.setUri(new URI(configObject.getString(SERVER_CONFIG_ATTRIBUTE)));
+				if (configObject.has(Helper.REQUEST_ARRAY_PARAMETER_NAME))
+					client.setRequestArray(configObject.getJSONArray(Helper.REQUEST_ARRAY_PARAMETER_NAME));
+				if (configObject.has(Helper.LOCALE_PARAMETER_NAME))
+					client.setLocale(new Locale(configObject.getString(Helper.LOCALE_PARAMETER_NAME)));
 			} catch (FileNotFoundException e) {
 				System.err.println("The config file \"" + configFileName + "\" cannot be found.");
 				return;
@@ -300,38 +293,36 @@ public class JSONPOSTClient {
 			} catch (JSONException e) {
 				System.err.println("The config file \"" + configFileName + "\" doesn't contain valid JSON code.");
 				return;
+			} catch (URISyntaxException e) {
+				System.err.println("The config file \"" + configFileName + "\" doesn't contain a valid URI.");
+				return;
 			}
 		}
 
-		// parse the command line argumens and set the clients url an requestArray accordingly
-		if (commandLine.hasOption('s'))
+		// parse the command line arguments and set the clients uri,locale and
+		// requestArray accordingly
+		if (commandLine.hasOption('u'))
 			try {
-				client.setUrl(new URL(commandLine.getOptionValue('s')));
-			} catch (MalformedURLException e) {
+				client.setUri(new URI(commandLine.getOptionValue('u')));
+			} catch (URISyntaxException e) {
 				System.err.println("The server argument parameter must point to a valid URL.");
 				return;
 			}
 
-		if (commandLine.hasOption('l'))
+		if (commandLine.hasOption('a'))
 			try {
-				client.setRequestArray(new JSONArray(commandLine.getOptionValue('l')));
+				client.setRequestArray(new JSONArray(commandLine.getOptionValue('a')));
 			} catch (JSONException e) {
 				System.err.println("The list parameter must be a valid JSON array.");
 				return;
 			}
 
+		if (commandLine.hasOption('l'))
+			client.setLocale(new Locale(commandLine.getOptionValue('l')));
+
 		// get the request and response arrays
 		JSONArray requestArray = client.getRequestArray();
-		JSONArray responseArray = null;
-		try {
-			responseArray = client.getResponseArray();
-		} catch (IOException e) {
-			System.err.println("The server didn't behave as expected.");
-			return;
-		} catch (JSONException e) {
-			System.err.println("The server didn't send a JSON array.");
-			return;
-		}
+		JSONArray responseArray = client.getResponseArray();
 
 		// output the result
 		System.out.println("The request list: " + requestArray.toString() + ".");
