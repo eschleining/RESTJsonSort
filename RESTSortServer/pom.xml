@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>RESTJsonSort</groupId>
 	<artifactId>RESTSortServer</artifactId>
-	<version>1.4</version>
+	<version>1.5-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -48,7 +48,7 @@
 		<dependency>
 			<groupId>RESTJsonSort</groupId>
 			<artifactId>RESTSortHelper</artifactId>
-			<version>1.4</version>
+			<version>1.5-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

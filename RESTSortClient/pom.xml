@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>RESTJsonSort</groupId>
 	<artifactId>RESTSortClient</artifactId>
-	<version>1.4</version>
+	<version>1.5-SNAPSHOT</version>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>RESTJsonSort</groupId>
 			<artifactId>RESTSortHelper</artifactId>
-			<version>1.4</version>
+			<version>1.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>
