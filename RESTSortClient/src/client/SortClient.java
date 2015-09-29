@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.text.Collator;
 import java.util.List;
 import java.util.Locale;
@@ -79,8 +81,10 @@ public class SortClient {
 	 *         responseArray, else does a get request with the requestArray and
 	 *         locale parameters, sets the responseArray field to the received
 	 *         result and returns the value of the responseArray afterwards
+	 * @throws UnsupportedEncodingException
+	 *             if "UTF-8" is not supported
 	 */
-	public JSONArray getResponseArray() {
+	public JSONArray getResponseArray() throws UnsupportedEncodingException {
 
 		// if responseArray is already set, return it
 		if (responseArray != null)
@@ -89,8 +93,11 @@ public class SortClient {
 		Client client = Client.create(new DefaultClientConfig());
 		WebResource resource = client.resource(uri).path(Helper.SORT_PATH);
 		resource.accept(MediaType.APPLICATION_JSON);
-		responseArray = resource.queryParam(Helper.LOCALE_PARAMETER_NAME, locale.toString())
-				.queryParam(Helper.REQUEST_ARRAY_PARAMETER_NAME, requestArray.toString()).get(JSONArray.class);
+		String encoding = "UTF-8";
+		String arrayParam = URLEncoder.encode(requestArray.toString(), "UTF-8");
+		String localeParam = URLEncoder.encode(locale.toString(), encoding);
+		responseArray = resource.queryParam(Helper.LOCALE_PARAMETER_NAME, localeParam)
+				.queryParam(Helper.REQUEST_ARRAY_PARAMETER_NAME, arrayParam).get(JSONArray.class);
 
 		return responseArray;
 	}
@@ -335,7 +342,13 @@ public class SortClient {
 
 		// get the request and response arrays
 		JSONArray requestArray = client.getRequestArray();
-		JSONArray responseArray = client.getResponseArray();
+		JSONArray responseArray = null;
+		try {
+			responseArray = client.getResponseArray();
+		} catch (UnsupportedEncodingException e1) {
+			System.err.println("UTF-8 not supported:" + e1.getMessage());
+			return;
+		}
 
 		// output the result
 		System.out.println("The request list: " + requestArray.toString() + ".");
