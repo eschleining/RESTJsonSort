@@ -14,11 +14,12 @@ import org.codehaus.jettison.json.JSONException;
  */
 public class Helper {
 
-	// Query parameter names
+	// strings used by server and client
 	public static final String REQUEST_ARRAY_PARAMETER_NAME = "array";
 	public static final String LOCALE_PARAMETER_NAME = "locale";
 	public static final String DEFAULT_REQUEST_ARRAY = "[\"harry\",\"ron\",\"hermione\"]";
 	public static final String DEFAULT_LOCALE = "en";
+	public static final String SORT_PATH = "/sort";
 
 	/**
 	 * Helper method that converts a JSONArray Object to a List of Strings.

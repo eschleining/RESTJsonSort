@@ -1,5 +1,5 @@
 {
-	"uri"	:	"http://localhost:8080/RESTSortServer/sort",
+	"uri"	:	"http://localhost:8080/RESTSortServer",
 	
 	"array"	:	["harry", "ron", "hermione"],
 	

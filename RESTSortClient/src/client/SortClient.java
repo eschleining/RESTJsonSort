@@ -39,7 +39,7 @@ public class SortClient {
 
 	private static final String SERVER_CONFIG_ATTRIBUTE = "uri";
 
-	private static final String DEFAULT_URI = "http://localhost:8080/RESTSortServer/sort";
+	private static final String DEFAULT_URI = "http://localhost:8080/RESTSortServer";
 
 	private URI uri = null;
 	private JSONArray requestArray = null, responseArray = null;
@@ -78,9 +78,9 @@ public class SortClient {
 	 * it.
 	 * 
 	 * @return if the field responseArray is not null, returns the field
-	 *         responseArray, else does a get request with the requestArray and locale parameters,
-	 *         sets the responseArray field to the received result and returns
-	 *         the value of the responseArray afterwards
+	 *         responseArray, else does a get request with the requestArray and
+	 *         locale parameters, sets the responseArray field to the received
+	 *         result and returns the value of the responseArray afterwards
 	 */
 	public JSONArray getResponseArray() {
 
@@ -89,7 +89,7 @@ public class SortClient {
 			return responseArray;
 
 		Client client = Client.create(new DefaultClientConfig());
-		WebResource resource = client.resource(uri);
+		WebResource resource = client.resource(uri).path(Helper.SORT_PATH);
 		resource.accept(MediaType.APPLICATION_JSON);
 		responseArray = resource.queryParam(Helper.LOCALE_PARAMETER_NAME, locale.toString())
 				.queryParam(Helper.REQUEST_ARRAY_PARAMETER_NAME, requestArray.toString()).get(JSONArray.class);
@@ -115,8 +115,9 @@ public class SortClient {
 	}
 
 	/**
-	 * Creates a JSON object from a file that should contain the attributes "uri", "array" and
-	 * "locale", specifying which uri the array and locale will be send to.
+	 * Creates a JSON object from a file that should contain the attributes
+	 * "uri", "array" and "locale", specifying which uri the array and locale
+	 * will be send to.
 	 * 
 	 * @param filename
 	 *            the filename of the config file. The file must be in json

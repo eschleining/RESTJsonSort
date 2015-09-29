@@ -66,47 +66,51 @@ public class SortServer {
 		return new JSONArray(list);
 	}
 
-//	/**
-//	 * 
-//	 * POST service method, receives a JSON object of the form {"locale" :
-//	 * String, "array" : String[]}, parses its parameters into a locale and an
-//	 * JSON array, sorts the array with the corresponding locale collator and
-//	 * returns it. If array or locale are not specified, default values from the
-//	 * Helper class are used.
-//	 * 
-//	 * @param requestObject
-//	 *            the JSONObject sent by the client
-//	 * 
-//	 * @return Response with status 200 (ok) and the sorted array in JSON format
-//	 *         or Response with status 400 (invalid data) and no payload if the
-//	 *         client data cannot be processed.
-//	 */
-//	@POST
-//	@Path("/sort")
-//	@Consumes(MediaType.APPLICATION_JSON)
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public Response sortJSONStringArray(JSONObject requestObject) {
-//		try {
-//			// create default parameters
-//			JSONArray requestArray = new JSONArray(Helper.DEFAULT_REQUEST_ARRAY);
-//			Locale locale = new Locale(Helper.DEFAULT_LOCALE);
-//
-//			// override default parameters with requestObject
-//			if (requestObject.has(Helper.REQUEST_ARRAY_PARAMETER_NAME))
-//				requestArray = requestObject.getJSONArray(Helper.REQUEST_ARRAY_PARAMETER_NAME);
-//			if (requestObject.has(Helper.LOCALE_PARAMETER_NAME))
-//				locale = new Locale(requestObject.getString(Helper.LOCALE_PARAMETER_NAME));
-//
-//			// sort and respond with ok()
-//			JSONArray responsePayload = sort(requestArray, locale);
-//			return Response.ok().entity(responsePayload).build();
-//		} catch (JSONException e) {
-//			// Send a response with status 400 (invalid data) in case the
-//			// jsonArray cannot be processed properly.
-//			return Response.status(400).build();
-//		}
-//
-//	}
+	// /**
+	// *
+	// * POST service method, receives a JSON object of the form {"locale" :
+	// * String, "array" : String[]}, parses its parameters into a locale and an
+	// * JSON array, sorts the array with the corresponding locale collator and
+	// * returns it. If array or locale are not specified, default values from
+	// the
+	// * Helper class are used.
+	// *
+	// * @param requestObject
+	// * the JSONObject sent by the client
+	// *
+	// * @return Response with status 200 (ok) and the sorted array in JSON
+	// format
+	// * or Response with status 400 (invalid data) and no payload if the
+	// * client data cannot be processed.
+	// */
+	// @POST
+	// @Path("/sort")
+	// @Consumes(MediaType.APPLICATION_JSON)
+	// @Produces(MediaType.APPLICATION_JSON)
+	// public Response sortJSONStringArray(JSONObject requestObject) {
+	// try {
+	// // create default parameters
+	// JSONArray requestArray = new JSONArray(Helper.DEFAULT_REQUEST_ARRAY);
+	// Locale locale = new Locale(Helper.DEFAULT_LOCALE);
+	//
+	// // override default parameters with requestObject
+	// if (requestObject.has(Helper.REQUEST_ARRAY_PARAMETER_NAME))
+	// requestArray =
+	// requestObject.getJSONArray(Helper.REQUEST_ARRAY_PARAMETER_NAME);
+	// if (requestObject.has(Helper.LOCALE_PARAMETER_NAME))
+	// locale = new
+	// Locale(requestObject.getString(Helper.LOCALE_PARAMETER_NAME));
+	//
+	// // sort and respond with ok()
+	// JSONArray responsePayload = sort(requestArray, locale);
+	// return Response.ok().entity(responsePayload).build();
+	// } catch (JSONException e) {
+	// // Send a response with status 400 (invalid data) in case the
+	// // jsonArray cannot be processed properly.
+	// return Response.status(400).build();
+	// }
+	//
+	// }
 
 	/**
 	 * GET service method, receives a JSON array and a locale string, sorts the
@@ -122,7 +126,7 @@ public class SortServer {
 	 *         client data cannot be processed.
 	 */
 	@GET
-	@Path("/sort")
+	@Path(Helper.SORT_PATH)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response sortJSONStringArray(
 			@DefaultValue(Helper.DEFAULT_REQUEST_ARRAY) @QueryParam(Helper.REQUEST_ARRAY_PARAMETER_NAME) JSONArray requestArray,
