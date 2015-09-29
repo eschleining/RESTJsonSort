@@ -37,7 +37,7 @@ To check if everything is installed properly open a browser window with your tom
 
 ###Client:
 
-Download the file `RESTSortClient.jar` and optionally the file `config.json` [here](https://github.com/eschleining/RESTJsonSort/releases/latest)
+Download the file `RESTSortClient.jar` and optionally the file `config.json` [here](https://github.com/eschleining/RESTJsonSort/releases/latest).
 
 Run the jar like follows:
 ```bash
