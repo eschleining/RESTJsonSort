@@ -17,7 +17,7 @@ public class Helper {
 	// strings used by server and client
 	public static final String REQUEST_ARRAY_PARAMETER_NAME = "array";
 	public static final String LOCALE_PARAMETER_NAME = "locale";
-	public static final String DEFAULT_REQUEST_ARRAY = "[\"harry\",\"ron\",\"hermione\"]";
+	public static final String DEFAULT_REQUEST_ARRAY = "[]";
 	public static final String DEFAULT_LOCALE = "en_US";
 	public static final String SORT_PATH = "/sort";
 
