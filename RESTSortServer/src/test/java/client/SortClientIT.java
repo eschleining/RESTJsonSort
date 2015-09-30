@@ -1,3 +1,4 @@
+package client;
 import static org.junit.Assert.*;
 
 import org.codehaus.jettison.json.JSONArray;

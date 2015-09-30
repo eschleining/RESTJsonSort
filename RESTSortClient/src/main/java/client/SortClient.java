@@ -42,8 +42,6 @@ import helper.Helper;
  */
 public class SortClient {
 
-	private static final String DEFAULT_URI = "http://localhost:8080/RESTSortServer";
-
 	private URI uri = null;
 	private JSONArray requestArray = null, responseArray = null;
 	private Locale locale = null;
@@ -76,16 +74,17 @@ public class SortClient {
 	}
 
 	/**
-	 * Posts the requestArray object to the server specified by the url,
-	 * receives the response an sets the responseArray field before returning
-	 * it.
+	 * Executes a GET request with the requestArray object to the server
+	 * specified by the url, receives the response an sets the responseArray
+	 * field before returning it.
 	 * 
 	 * @return if the field responseArray is not null, returns the field
 	 *         responseArray, else does a get request with the requestArray and
 	 *         locale parameters, sets the responseArray field to the received
 	 *         result and returns the value of the responseArray afterwards
-	 *         
-	 * @throws JSONException if the response cannot be parsed as a JSON array
+	 * 
+	 * @throws JSONException
+	 *             if the response cannot be parsed as a JSON array
 	 */
 	public JSONArray getResponseArray() throws JSONException {
 
@@ -117,11 +116,11 @@ public class SortClient {
 	 */
 	public SortClient() {
 		try {
-			this.uri = new URI(DEFAULT_URI);
+			this.uri = new URI(Helper.DEFAULT_URI);
 			this.requestArray = new JSONArray(Helper.DEFAULT_REQUEST_ARRAY);
 			this.locale = new Locale(Helper.DEFAULT_LOCALE);
 		} catch (URISyntaxException e) {
-			System.err.println("The default URI(" + DEFAULT_URI + ") is not parsable.");
+			System.err.println("The default URI(" + Helper.DEFAULT_URI + ") is not parsable.");
 		} catch (JSONException e) {
 			System.err.println("The default array (" + Helper.DEFAULT_REQUEST_ARRAY + ") is not parsable.");
 		}
@@ -200,7 +199,7 @@ public class SortClient {
 	private static final String URI_OPTION_SHORT = "u";
 	private static final String URI_OPTION_LONG = Helper.URI_PARAMETER_NAME;
 	private static final String URI_OPTION_DESCRIPTION = "An URI pointing to the RESTSortServer to send the wordList to (default \""
-			+ DEFAULT_URI + "\").";
+			+ Helper.DEFAULT_URI + "\").";
 
 	private static final String ARRAY_OPTION_SHORT = "a";
 	private static final String ARRAY_OPTION_LONG = Helper.REQUEST_ARRAY_PARAMETER_NAME;

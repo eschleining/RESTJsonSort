@@ -22,6 +22,9 @@ public class Helper {
 	public static final String DEFAULT_REQUEST_ARRAY = "[]";
 	public static final String DEFAULT_LOCALE = "en_US";
 	public static final String SORT_PATH = "/sort";
+	public static final String VERIFY_PATH="/verify";
+	
+	public static final String DEFAULT_URI = "http://localhost:8080/RESTSortServer";
 
 	/**
 	 * Helper method that converts a JSONArray Object to a List of Strings.

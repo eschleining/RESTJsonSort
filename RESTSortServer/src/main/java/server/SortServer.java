@@ -36,7 +36,7 @@ public class SortServer {
 	 * @return response message with status 200
 	 */
 	@GET
-	@Path("/verify")
+	@Path(Helper.VERIFY_PATH)
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response verifyRESTService() {
 		String result = "The service is running properly.";
