@@ -11,7 +11,7 @@
 	<distributionManagement>
 		<repository>
 			<id>bintray</id>
-			<url>https://api.bintray.com/content/${bintray.user}/maven/REST-Example/;bt_package=REST-Example;bt_version=${project.version}</url>
+			<url>https://api.bintray.com/content/${bintray.user}/maven/REST-Example/${project.version}/</url>
 		</repository>
 	</distributionManagement>
 
