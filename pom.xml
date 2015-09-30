@@ -2,11 +2,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>RESTJsonSort</groupId>
 	<artifactId>RESTJsonSort</artifactId>
-	<version>1.5-SNAPSHOT</version>
+	<version>1.5</version>
   <packaging>pom</packaging>
   <scm>
     <developerConnection>scm:git:git@github.com:eschleining/RESTJsonSort.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>v1.5</tag>
   </scm>
 
   <properties>
@@ -30,14 +30,14 @@
     <!-- Optional JVM arguments for the forked container that are prepended to the option
          that configures the Zommons config location and appended to any debugging 
          configuration set by cargo.container.jvmargs.debug (See cargo-debug profile.)-->
-    <cargo.container.jvmargs></cargo.container.jvmargs>
+    <cargo.container.jvmargs />
     <!-- The port to use when the debugger is enabled. -->
     <cargo.container.debug.port>8000</cargo.container.debug.port>
     <!-- The suspend setting to use when the debugger is enabled. -->
     <cargo.container.debug.suspend>n</cargo.container.debug.suspend>
     <!-- The debug arguments used to enable debugging on the forked JVM. -->
     <cargo.container.debug.jvmargs>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=${cargo.container.debug.suspend},address=${cargo.container.debug.port} -Xnoagent -Djava.compiler=NONE</cargo.container.debug.jvmargs>
-    <cargo.container.jvmargs.debug></cargo.container.jvmargs.debug>
+    <cargo.container.jvmargs.debug />
     
     <cargo.deployable.default.groupId>${project.groupId}</cargo.deployable.default.groupId>
     <cargo.deployable.default.artifactId>${project.artifactId}</cargo.deployable.default.artifactId>
