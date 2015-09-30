@@ -9,7 +9,7 @@
 	<artifactId>RESTSortHelper</artifactId>
 	<packaging>jar</packaging>
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+	<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
