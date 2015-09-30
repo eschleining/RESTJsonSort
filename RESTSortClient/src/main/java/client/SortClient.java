@@ -26,6 +26,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 
@@ -83,8 +84,10 @@ public class SortClient {
 	 *         responseArray, else does a get request with the requestArray and
 	 *         locale parameters, sets the responseArray field to the received
 	 *         result and returns the value of the responseArray afterwards
+	 *         
+	 * @throws JSONException if the response cannot be parsed as a JSON array
 	 */
-	public JSONArray getResponseArray() {
+	public JSONArray getResponseArray() throws JSONException {
 
 		// if responseArray is already set, return it
 		if (responseArray != null)
@@ -97,8 +100,9 @@ public class SortClient {
 		try {
 			String arrayParam = URLEncoder.encode(requestArray.toString(), encoding);
 			String localeParam = URLEncoder.encode(locale.toString(), encoding);
-			responseArray = resource.queryParam(Helper.LOCALE_PARAMETER_NAME, localeParam)
-					.queryParam(Helper.REQUEST_ARRAY_PARAMETER_NAME, arrayParam).get(JSONArray.class);
+			ClientResponse response = resource.queryParam(Helper.LOCALE_PARAMETER_NAME, localeParam)
+					.queryParam(Helper.REQUEST_ARRAY_PARAMETER_NAME, arrayParam).get(ClientResponse.class);
+			responseArray = new JSONArray(response.getEntity(String.class));
 			return responseArray;
 		} catch (UnsupportedEncodingException e) {
 			System.err.println(encoding + " encoding not supported:" + e.getMessage());
@@ -359,7 +363,13 @@ public class SortClient {
 
 		// get the request and response arrays
 		JSONArray requestArray = client.getRequestArray();
-		JSONArray responseArray = client.getResponseArray();
+		JSONArray responseArray = null;
+		try {
+			responseArray = client.getResponseArray();
+		} catch (JSONException e1) {
+			System.err.println("Response was not an JSON array.");
+			return;
+		}
 
 		// output the result
 		System.out.println("The request list: " + requestArray.toString() + ".");

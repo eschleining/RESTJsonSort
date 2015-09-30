@@ -50,7 +50,7 @@ public class SortClientIT {
 	}
 
 	@Test
-	public void testGetResponseArray() {
+	public void testGetResponseArray() throws JSONException {
 		assertEquals(empty_array.toString(), empty.getResponseArray().toString());
 		assertEquals(one_array.toString(), one.getResponseArray().toString());
 		assertEquals(sorted_array.toString(), sorted.getResponseArray().toString());
