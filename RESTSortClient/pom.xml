@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>RESTJsonSort</groupId>
 		<artifactId>RESTJsonSort</artifactId>
-		<version>1.6-SNAPSHOT</version>
+		<version>1.5</version>
 	</parent>
 	<artifactId>RESTSortClient</artifactId>
 	<packaging>jar</packaging>
@@ -48,7 +48,7 @@
 		<dependency>
 			<groupId>RESTJsonSort</groupId>
 			<artifactId>RESTSortHelper</artifactId>
-			<version>1.6-SNAPSHOT</version>
+			<version>1.5</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>

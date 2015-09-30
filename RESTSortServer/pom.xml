@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>RESTJsonSort</groupId>
 		<artifactId>RESTJsonSort</artifactId>
-		<version>1.6-SNAPSHOT</version>
+		<version>1.5</version>
 	</parent>
 	<artifactId>RESTSortServer</artifactId>
 	<packaging>war</packaging>
@@ -48,7 +48,7 @@
 		<dependency>
 			<groupId>RESTJsonSort</groupId>
 			<artifactId>RESTSortHelper</artifactId>
-			<version>1.6-SNAPSHOT</version>
+			<version>1.5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
@@ -61,7 +61,7 @@
 		<dependency>
 			<groupId>RESTJsonSort</groupId>
 			<artifactId>RESTSortClient</artifactId>
-			<version>1.6-SNAPSHOT</version>
+			<version>1.5</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
