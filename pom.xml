@@ -10,9 +10,11 @@
   </scm>
 
   <properties>
-    <junit.version>4.7</junit.version>
+    <junit.version>4.12</junit.version>
 	<jersey-json.version>1.8</jersey-json.version>
-  
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	
     <!-- The Cargo container type -->
     <cargo.container.id>tomcat7x</cargo.container.id>
     <!-- The URL of the Zip file based installer for the container that Cargo is to deploy -->
@@ -47,27 +49,17 @@
     <module>RESTSortServer</module>
     <module>RESTSortClient</module>
   </modules>
-
- <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
-        <scope>test</scope>
-      </dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-json</artifactId>
-			<version>${jersey-json.version}</version>
-		</dependency>
-    </dependencies>
-  </dependencyManagement>
-
-  
   <build>
-    <plugins>
-     
+    <pluginManagement>
+      <plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
  <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
@@ -81,7 +73,6 @@
       <skip>true</skip>
     </configuration>
   </plugin>
-
       <plugin>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-failsafe-plugin</artifactId>
@@ -96,11 +87,6 @@
           </execution>
         </executions>
       </plugin>
-
-     </plugins>
-
-    <pluginManagement>
-      <plugins>
         <plugin>
           <groupId>org.codehaus.cargo</groupId>
           <artifactId>cargo-maven2-plugin</artifactId>
@@ -195,8 +181,23 @@
         </plugin>
       </plugins>
     </pluginManagement>
-
 </build>
+
+ <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+		<scope>test</scope>
+      </dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-json</artifactId>
+			<version>${jersey-json.version}</version>
+		</dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <profiles>
     <profile>
