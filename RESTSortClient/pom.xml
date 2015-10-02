@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>de.eschleining</groupId>
 		<artifactId>RESTJsonSort</artifactId>
-		<version>1.6</version>
+		<version>1.7-SNAPSHOT</version>
 	</parent>
 	<artifactId>RESTSortClient</artifactId>
 	<packaging>jar</packaging>
@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>de.eschleining</groupId>
 			<artifactId>RESTSortHelper</artifactId>
-			<version>1.6</version>
+			<version>1.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>

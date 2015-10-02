@@ -2,11 +2,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.eschleining</groupId>
 	<artifactId>RESTJsonSort</artifactId>
-	<version>1.6</version>
+	<version>1.7-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<scm>
 		<developerConnection>scm:git:git@github.com:eschleining/RESTJsonSort.git</developerConnection>
-		<tag>v1.6</tag>
+		<tag>HEAD</tag>
 	</scm>
 	<distributionManagement>
 		<repository>
